@@ -1,0 +1,10 @@
+#navigation-menu-container {
+  display: flex;
+  flex-direction: column;
+
+  text-align: center;
+}
+
+.navigation-menu-item {
+  margin-bottom: 24px;
+}

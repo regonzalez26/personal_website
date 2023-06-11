@@ -1,0 +1,17 @@
+#navigation-panel-container {
+  display: inline-block;
+  width: 300px;
+  height: 100vh;
+
+  background-color: #d7f4e6;
+}
+
+#display-picture {
+  margin: 96px auto 96px auto;
+
+  display: block;
+  height: 150px;
+  width: 150px;
+
+  border-radius: 50%;
+}

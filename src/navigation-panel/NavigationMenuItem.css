@@ -1,0 +1,15 @@
+.navigation-menu-item button {
+  height: 50px;
+  width: 100%;
+
+  font-size: 24px;
+  color: #36624d;
+
+  background-color: rgba(0,0,0,0);
+  border: none;
+  user-select: none;
+}
+
+.navigation-menu-item .selected {
+  background-color: #ffffff;
+}
