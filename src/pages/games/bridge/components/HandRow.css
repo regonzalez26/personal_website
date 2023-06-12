@@ -1,0 +1,9 @@
+.card-wrapper {
+  position: absolute;
+  transform-origin: bottom;
+}
+
+.card:hover {
+  background-color: #ffc;
+  transform: translateY(-24px);
+}

@@ -1,0 +1,33 @@
+.card {
+  display: block;
+  height: 165px;
+  width: 108px;
+
+  padding: 6px;
+
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid black;
+}
+
+.suite-image {
+  height: 24px;
+  width: 24px;
+
+  line-height: 24px;
+  vertical-align: top;
+
+  user-select: none;
+}
+
+.suite-number {
+  display: inline-block;
+
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 24px;
+  text-align: center;
+  vertical-align: top;
+
+  user-select: none;
+}

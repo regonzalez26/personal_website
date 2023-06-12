@@ -1,0 +1,21 @@
+#hands-container-0 {
+  position: relative;
+  left: 150px;
+}
+
+#hands-container-1 {
+  position: relative;
+  left: 1000px;
+}
+
+#hands-container-2 {
+  position: relative;
+  left: 150px;
+  top: 300px;
+}
+
+#hands-container-3 {
+  position: relative;
+  left: 1000px;
+  top: 300px;
+}

@@ -18,9 +18,7 @@ class NavigationMenu extends React.Component {
     selection[event.currentTarget.id] = true
 
 
-    this.setState({
-      menuItemIsSelected: selection
-    })
+    this.setState({menuItemIsSelected: selection})
   }
 
   render(){
@@ -29,6 +27,7 @@ class NavigationMenu extends React.Component {
         <NavigationMenuItem route="/home" id="home" selected={this.state.menuItemIsSelected.home} handleClick={this.handleClick.bind(this)} label="Home" />
         <NavigationMenuItem route= "/blog" id="writings" selected={this.state.menuItemIsSelected.writings} handleClick={this.handleClick.bind(this)} label="Blog" />
         <NavigationMenuItem route="/contact" id="contact" selected={this.state.menuItemIsSelected.contact} handleClick={this.handleClick.bind(this)} label="Contact" />
+        <NavigationMenuItem route="/games" id="games" selected={this.state.menuItemIsSelected.games} handleClick={this.handleClick.bind(this)} label="Games" />
       </div>
     )
   }

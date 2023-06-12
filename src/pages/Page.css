@@ -1,0 +1,13 @@
+.page-container {
+  display: inline-block;
+  padding-left: 60px;
+  padding-top: 108px;
+}
+
+.page-container .header {
+  display: block;
+  margin-bottom: 36px;
+
+  font-size: 36px;
+  color: #36624d;
+}
