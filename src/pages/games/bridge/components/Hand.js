@@ -11,7 +11,7 @@ class Hand extends React.Component {
   }
 
   init(){
-    this.cards = this.props.cards
+    this.cards = this.props.cards ?? []
     this.cardgroup = this.arrangeBySuite()
   }
 
@@ -72,7 +72,7 @@ class Hand extends React.Component {
   }
 
   componentDidUpdate(prevProps){
-    if(prevProps.cards != this.props.cards){
+    if(prevProps.cards !== this.props.cards){
       this.init()
     }
   }

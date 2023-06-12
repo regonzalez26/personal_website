@@ -1,0 +1,34 @@
+.player-actions-container {
+  position: absolute;
+  width: 300px;
+  padding: 12px;
+  top: 180px;
+
+  text-align: right;
+
+  background-color: #fff;
+  border-radius: 12px 12px 0 12px;
+  border: 1px solid black;
+
+  z-index: 200;
+}
+
+.player-actions-container.active {
+  background-color: #ffc;
+}
+
+.player-container {
+  position: absolute;
+}
+
+.player-game-status-container {
+  position: absolute;
+  height: 24px;
+  width: 200px;
+  right: 0px;
+  bottom: -25px;
+  padding-right: 12px;
+  border-top: 1px solid black;
+  border-radius: 0 0 12px 12px;
+  background-color: lightgray;
+}

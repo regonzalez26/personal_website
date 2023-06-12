@@ -43,7 +43,7 @@ class HandRow extends React.Component{
   }
 
   componentDidUpdate(prevProps){
-    if(prevProps.cards != this.props.cards){
+    if(prevProps.cards !== this.props.cards){
       this.init()
     }
   }

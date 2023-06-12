@@ -2,42 +2,49 @@ import React from "react"
 
 import Deck from "./components/Deck"
 import Hand from "./components/Hand"
+import Player from "./Player"
 
 import "./Bridge.css"
-import HandRow from "./components/HandRow"
 
 class Bridge extends React.Component {
-  state = {gameId: 1}
+  static GamePhase = Object.freeze({Idle: 0, Betting: 1, PartnerPicking: 2, Rounds: 3, End: 4})
 
   constructor(props){
     super(props)
     this.deck = new Deck()
     this.hands = []
+    this.props.setToolbars([
+      {label: "New Game", fxn: this.newGame.bind(this)},
+      {label: "End Game", fxn: ()=>{}}
+    ]
+    )
   }
 
   newGame(){
     this.deck.shuffle()
     this.hands = this.deck.distribute()
-    this.setState({gameId: Math.random()})
-  }
-
-  startGame(){
-    this.startBettingPhase()
-  }
-
-  startBettingPhase(){
-
+    this.setState({
+      phase: Bridge.GamePhase.Betting,
+      turnPlayerNo: 1
+    })
   }
 
   render(){
     return (
       <div id="bridge-game-container">
-        <button onClick={this.newGame.bind(this)}>New Game</button>
+        <div id="bridge-game-screen-container">
+          
+        </div>
         {
           this.hands.map((hand, index) => {
             return (
               <div key={Math.random()} id={`hands-container-${index}`}>
-                <Hand cards={hand}/>
+                <Player
+                  playerNo={index+1}
+                  active={this.state.turnPlayerNo === index+1}
+                  phase={this.state.phase}
+                  hand={<Hand cards={hand}/>}
+                />
               </div>
             )
           })

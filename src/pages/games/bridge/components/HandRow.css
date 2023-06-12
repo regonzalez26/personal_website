@@ -6,4 +6,5 @@
 .card:hover {
   background-color: #ffc;
   transform: translateY(-24px);
+  transition: 0.1s ease-in;
 }

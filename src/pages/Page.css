@@ -1,11 +1,11 @@
 .page-container {
   display: inline-block;
   padding-left: 60px;
-  padding-top: 108px;
+  padding-top: 60px;
 }
 
 .page-container .header {
-  display: block;
+  display: flex;
   margin-bottom: 36px;
 
   font-size: 36px;

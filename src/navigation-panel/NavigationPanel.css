@@ -1,13 +1,19 @@
 #navigation-panel-container {
   display: inline-block;
-  width: 300px;
+  width: 196px;
   height: 100vh;
 
   background-color: #d7f4e6;
+  transition: 0.2s ease-in;
+}
+
+#navigation-panel-container:hover {
+  width: 240px;
+  transition: 0.2s ease-in;
 }
 
 #display-picture {
-  margin: 96px auto 96px auto;
+  margin: 60px auto 96px auto;
 
   display: block;
   height: 150px;
