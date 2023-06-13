@@ -1,57 +1,86 @@
-import React from "react"
+import React, {useState} from "react"
 
 import Deck from "./components/Deck"
 import Hand from "./components/Hand"
 import Player from "./Player"
 
 import "./Bridge.css"
+import PlayingTable from "./PlayingTable"
+import { BridgeEvents } from "./server/DataStructures"
+import BridgeClient from "./BridgeClient"
 
-class Bridge extends React.Component {
-  static GamePhase = Object.freeze({Idle: 0, Betting: 1, PartnerPicking: 2, Rounds: 3, End: 4})
+export const BridgePhases = {Idle: 0, Betting: 1, PartnerPicking: 2, Rounds: 3, End: 4}
 
-  constructor(props){
-    super(props)
-    this.deck = new Deck()
-    this.hands = []
-    this.props.setToolbars([
-      {label: "New Game", fxn: this.newGame.bind(this)},
-      {label: "End Game", fxn: ()=>{}}
-    ]
-    )
+function Bridge(props) {
+  const [phase, setPhase]=useState(BridgePhases.Idle)
+  const [activePlayer, _setActivePlayer] = useState(-1)
+  const [notif, setNotif] = useState("Click New Game to Start")
+  const [players, setPlayers] = useState([])
+  const WS_URL = 'ws://localhost:8000'
+  const [deck, setDeck] = useState(new Deck())
+  const [hands, setHands]=useState([])
+
+  const clientCallBack = (msg) => {
+    setNotif(msg)
   }
 
-  newGame(){
-    this.deck.shuffle()
-    this.hands = this.deck.distribute()
-    this.setState({
-      phase: Bridge.GamePhase.Betting,
-      turnPlayerNo: 1
-    })
+  const [bridgeClient, setbridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack.bind(this)))
+  
+  const endGame = () => {
+    if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again.") }
+    else { setNotif("Click New Game to Start")}
+
+    setHands([])
+    setPlayers([])
+    setPhase(BridgePhases.End)
+    bridgeClient.close()
   }
 
-  render(){
-    return (
-      <div id="bridge-game-container">
-        <div id="bridge-game-screen-container">
-          
-        </div>
-        {
-          this.hands.map((hand, index) => {
-            return (
-              <div key={Math.random()} id={`hands-container-${index}`}>
-                <Player
-                  playerNo={index+1}
-                  active={this.state.turnPlayerNo === index+1}
-                  phase={this.state.phase}
-                  hand={<Hand cards={hand}/>}
-                />
-              </div>
-            )
-          })
-        }
+  const newGame = () => {
+    if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again."); return}
+
+    deck.shuffle()
+    setHands(deck.distribute())
+    setPhase(BridgePhases.Betting)
+    setNotif("Set your bet!")
+
+    var localPlayerId = Math.floor(Math.random() * 1000000)
+    setPlayers([localPlayerId])
+    bridgeClient.makeNewGame(localPlayerId)
+  }
+
+  const toolbars = [
+    {label: "New Game", fxn: newGame},
+    {label: "End Game", fxn: endGame}
+  ]
+
+  return (
+    <div id="bridge-game-container">
+      <div className="toolbars">
+          {
+            toolbars.map((toolbar) => {
+              return <button key={Math.random()} onClick={()=>{toolbar.fxn()}}>{toolbar.label}</button>
+            })
+          }
       </div>
-    )
-  }
+      <PlayingTable phase={phase} notif={notif}/>
+      {
+        players.map((player, index) => {
+          return (
+            <div key={Math.random()} id={`hands-container-${index}`}>
+              <Player
+                bridgeClient={bridgeClient}
+                playerId={players[index]}
+                active={activePlayer === index+1}
+                phase={phase}
+                hand={<Hand cards={hands[index]}/>}
+              />
+            </div>
+          )
+        })
+      }
+    </div>
+  )
 }
 
 export default Bridge

@@ -15,8 +15,21 @@ class PlayerBetOptions extends React.Component{
     this.setState({betNum: level})
   }
 
+  sendBet(){
+    this.props.bridgeClient.send({
+        event: "bet",
+        data: {
+          gameId: "123",
+          playerId: "123",
+          suite: this.state.suite,
+          betNum: this.state.betNum
+        }
+      }
+    )
+  }
+
   render(){
-    let betBtn = this.state.suite?.length>0 && this.state.betNum>0 ? <button>BET</button> : ""
+    let betBtn = this.state.suite?.length>0 && this.state.betNum>0 ? <button onClick={this.sendBet.bind(this)}>BET</button> : ""
     return (
       <div className="bet-buttons-container">
         <div id="suite-buttons">

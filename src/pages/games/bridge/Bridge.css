@@ -1,11 +1,12 @@
 #hands-container-0 {
-  position: relative;
-  left: 150px;
+  position: fixed;
+  left: calc(0.5*(100vw - 196px) + 196px);
+  top: 80%;
 }
 
 #hands-container-1 {
   position: relative;
-  left: 1000px;
+  left: 1100px;
 }
 
 #hands-container-2 {
@@ -16,6 +17,6 @@
 
 #hands-container-3 {
   position: relative;
-  left: 1000px;
+  left: 1100px;
   top: 300px;
 }

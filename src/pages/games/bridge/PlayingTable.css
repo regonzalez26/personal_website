@@ -1,0 +1,21 @@
+#playing-table-container {
+  position: absolute;
+  margin-top: -72px;
+  margin-left: calc(0.5*(100vw - 696px) - 54px);
+  height: 500px;
+  width: 500px;
+  border-radius: 12px;
+
+  user-select: none;
+}
+
+#playing-table-notification-bar {
+  display: block;
+  height: 36px;
+  width: 476px;
+  padding: 0 12px 0 12px;
+
+  font-size: 24px;
+  color: #fff;
+  border-bottom: 1px solid white;
+}

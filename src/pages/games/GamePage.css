@@ -1,7 +1,9 @@
 .toolbars {
+  position: absolute;
   display: flex;
   width: 300px;
-  margin-left: 48px;
+  margin-top: -78px;
+  margin-left: 144px;
   height: 48px;
   justify-content: space-evenly;
   align-items: center;

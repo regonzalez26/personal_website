@@ -5,11 +5,7 @@
 
   background-color: #d7f4e6;
   transition: 0.2s ease-in;
-}
-
-#navigation-panel-container:hover {
-  width: 240px;
-  transition: 0.2s ease-in;
+  border-right: 2px solid white;
 }
 
 #display-picture {
