@@ -49,9 +49,25 @@ function Bridge(props) {
     bridgeClient.makeNewGame(localPlayerId)
   }
 
+  const inputGameCodeKeyDown = (event) =>  {
+    if(event.keyCode === 13){
+      var gameCode = event.currentTarget.value
+      setNotif(`Joining Game No. ${gameCode}`)
+    }
+  }
+
+  const joinGame = () => {
+    setNotif((
+      <div id="enter-game-code-container">
+        Enter Game Code: <input onKeyDown={inputGameCodeKeyDown} type="text" id="input-game-code"></input>
+      </div>
+    ))
+  }
+
   const toolbars = [
     {label: "New Game", fxn: newGame},
-    {label: "End Game", fxn: endGame}
+    {label: "Join Game", fxn: joinGame},
+    {label: "End Game", fxn: endGame},
   ]
 
   return (

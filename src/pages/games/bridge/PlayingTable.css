@@ -1,10 +1,7 @@
 #playing-table-container {
-  position: absolute;
-  margin-top: -72px;
   margin-left: calc(0.5*(100vw - 696px) - 54px);
   height: 500px;
   width: 500px;
-  border-radius: 12px;
 
   user-select: none;
 }
@@ -15,7 +12,21 @@
   width: 476px;
   padding: 0 12px 0 12px;
 
+  text-align:center;
+
   font-size: 24px;
   color: #fff;
-  border-bottom: 1px solid white;
+}
+
+#input-game-code {
+  height: 24px;
+  border-radius: 12px;
+  margin-left: 12px;
+}
+
+#enter-game-code-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
 }
