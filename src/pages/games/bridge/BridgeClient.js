@@ -8,11 +8,12 @@ const BridgeEvents = Object.freeze({
   BET: "bet"
 })
 
-const BridgeCommands  = Object.freeze({
-  CREATE_NEW_PLAYER: "create_new_player"
+export const BridgeCommands  = Object.freeze({
+  CREATE_NEW_PLAYER: "create_new_player",
+  SET_GAME_ID: "set_game_id"
 })
 
-class BridgeClient {
+export class BridgeClient {
   constructor(url, callBack){
     this.server = new WebSocket(url)
     this.clientCallBack = callBack
@@ -65,7 +66,11 @@ class BridgeClient {
   }
 
   handleNewGamePoolCreated(data){
-    this.gameId = data.gameId;
+    var msg = {
+      command: BridgeCommands.SET_GAME_ID,
+      gameId: data.gameId
+    }
+    this.clientCallBack(msg)
   }
 
 //----------------GAME ACTIONS--------------------------
@@ -121,5 +126,3 @@ class BridgeClient {
     return true
   }
 }
-
-export default BridgeClient

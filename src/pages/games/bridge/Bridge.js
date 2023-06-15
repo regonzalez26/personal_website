@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useCallback, useRef, useState} from "react"
 
 import Deck from "./components/Deck"
 import Hand from "./components/Hand"
@@ -6,11 +6,7 @@ import Player from "./Player"
 
 import "./Bridge.css"
 import PlayingTable from "./PlayingTable"
-import BridgeClient from "./BridgeClient"
-
-const BridgeCommands  = Object.freeze({
-  CREATE_NEW_PLAYER: "create_new_player"
-})
+import { BridgeClient, BridgeCommands } from "./BridgeClient"
 
 export const BridgePhases = {
   Idle: "idle",
@@ -28,9 +24,12 @@ function Bridge(props) {
   const [players, setPlayers] = useState([])
   const WS_URL = 'ws://localhost:8000'
   const [deck, setDeck] = useState(new Deck())
-  const [game, setGame]=useState()
+  const [game, setGame]= useState({})
+  const stateRef = useRef()
 
-  const clientCallBack = (msg) => {
+  stateRef.game = game
+
+  const clientCallBack = useCallback((msg) => {
     switch(msg.command){
       case BridgeCommands.CREATE_NEW_PLAYER:
         setGame({
@@ -41,13 +40,16 @@ function Bridge(props) {
         })
         setNotif(`You are now joined in game ${msg.gameId}`)
         break;
+      case BridgeCommands.SET_GAME_ID:
+        setGame({...stateRef.game, gameId: msg.gameId})
+        break;
       default:
         setNotif(msg)
         break;
     }
-  }
+  },[])
 
-  const [bridgeClient, setbridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack.bind(this)))
+  const [bridgeClient, setbridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))
   
   const endGame = () => {
     if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again.") }

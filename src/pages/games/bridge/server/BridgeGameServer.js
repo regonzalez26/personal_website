@@ -30,7 +30,7 @@ const handleNewGamePool = (connection, data) => {
   connection.send(JSON.stringify({
       event: BridgeEvents.NEW_GAME_POOL_CREATED,
       data: {
-        gameId: gamePool.gameId
+        gameId: gamePool.id
       }
     })
   )
