@@ -10,6 +10,7 @@ const BridgeEvents = Object.freeze({
   NEW_GAME_POOL_CREATED: "new_game_pool_created",
   JOIN_GAME_POOL: "join_game_pool",
   JOIN_GAME_POOL_SUCCESS: "join_game_pool_success",
+  GAME_NOT_FOUND: "game_not_found",
   BET: "bet"
 })
 
@@ -21,9 +22,9 @@ server.listen(BRIDGE_SERVER_PORT, ()=>{ console.log(`Server is running on port $
 
 const handleNewGamePool = (connection, data) => {
   var gamePool = {
-    gameId: uuid(),
+    id: uuid(),
     connection: connection,
-    players: [data.playerInfo]
+    hands: data.hands
   }
   gamePools.push(gamePool)
   connection.send(JSON.stringify({
@@ -38,21 +39,38 @@ const handleNewGamePool = (connection, data) => {
 }
 
 const handleJoinGamePool = (connection, data) => {
+  console.log("Joining game pool")
+  var gamePoolToJoin
+
   gamePools.forEach((gamePool) => {
-    if(gamePool.gameId === data.gameId){
-      gamePool.players.push({
-        id: data.playerId
-      })
+    if(gamePool.id === data.gameId){
+      gamePoolToJoin = gamePool
     }
   })
 
-  connection.send(JSON.stringify({
-      event: BridgeEvents.JOIN_GAME_POOL_SUCCESS,
-      data: {
-        hands: ["5D", "2H"]
+  if(gamePoolToJoin){
+    for(let i=0; i<gamePoolToJoin.hands.length; i++){
+      if(!gamePoolToJoin.hands[i].playerId){
+        gamePoolToJoin.hands[i].playerId = data.playerInfo.id
+        break
       }
-    })
-  )
+    }
+
+    connection.send(JSON.stringify({
+        event: BridgeEvents.JOIN_GAME_POOL_SUCCESS,
+        data: {
+          id: gamePoolToJoin.id,
+          hands: gamePoolToJoin.hands
+        }
+      })
+    )
+
+    displayGamePools()
+  } else {
+    connection.send(JSON.stringify({
+      event: BridgeEvents.GAME_NOT_FOUND
+    }))
+  }
 }
 
 const handleBet = (connection, data) => {
@@ -76,10 +94,12 @@ const displayGamePools = () => {
   }
 
   gamePools.forEach((gamePool) => {
-    console.log(`Game Pool Id: ${gamePool.gameId}`)
+    console.log(`Game Pool Id: ${gamePool.id}`)
     console.log(`\tPlayers`)
-    gamePool.players.forEach((player, index) => {
-      console.log(`\t${index+1}. ${player.id}`)
+    gamePool.hands.forEach((hand, index) => {
+      if(hand.playerId){
+        console.log(`\t${index+1}. ${hand.playerId}`)
+      }
     })
   })
 }
