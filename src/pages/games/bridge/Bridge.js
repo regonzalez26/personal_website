@@ -53,6 +53,7 @@ function Bridge(props) {
     if(event.keyCode === 13){
       var gameCode = event.currentTarget.value
       setNotif(`Joining Game No. ${gameCode}`)
+      bridgeClient.joinGame(gameCode)
     }
   }
 

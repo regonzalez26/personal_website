@@ -9,6 +9,7 @@ const BridgeEvents = Object.freeze({
   NEW_GAME_POOL: "new_game_pool",
   NEW_GAME_POOL_CREATED: "new_game_pool_created",
   JOIN_GAME_POOL: "join_game_pool",
+  JOIN_GAME_POOL_SUCCESS: "join_game_pool_success",
   BET: "bet"
 })
 
@@ -34,6 +35,24 @@ const handleNewGamePool = (connection, data) => {
   )
 
   displayGamePools()
+}
+
+const handleJoinGamePool = (connection, data) => {
+  gamePools.forEach((gamePool) => {
+    if(gamePool.gameId === data.gameId){
+      gamePool.players.push({
+        id: data.playerId
+      })
+    }
+  })
+
+  connection.send(JSON.stringify({
+      event: BridgeEvents.JOIN_GAME_POOL_SUCCESS,
+      data: {
+        hands: ["5D", "2H"]
+      }
+    })
+  )
 }
 
 const handleBet = (connection, data) => {
@@ -72,6 +91,9 @@ ws.on('connection', function(connection) {
     switch(msg.event){
       case BridgeEvents.NEW_GAME_POOL:
         handleNewGamePool(connection, msg.data)
+        break;
+      case BridgeEvents.JOIN_GAME_POOL:
+        handleJoinGamePool(connection, msg.data)
         break;
       case BridgeEvents.BET:
         handleBet(connection, msg.data)

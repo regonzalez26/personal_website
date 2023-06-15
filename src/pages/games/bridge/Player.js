@@ -19,6 +19,7 @@ class Player extends React.Component {
 
     let playerStatus = this.props.phase === BridgePhases.Rounds && this.props.active ? "Your turn!" : "Waiting for others..."
     playerStatus = this.props.phase === BridgePhases.Betting ? "Set your bet!" : "Waiting for others..."
+    playerStatus = `#${this.playerId}:` +  playerStatus
 
     return (
       <div className="player-container">
