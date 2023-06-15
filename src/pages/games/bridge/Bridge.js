@@ -6,10 +6,20 @@ import Player from "./Player"
 
 import "./Bridge.css"
 import PlayingTable from "./PlayingTable"
-import { BridgeEvents } from "./server/DataStructures"
 import BridgeClient from "./BridgeClient"
 
-export const BridgePhases = {Idle: 0, Betting: 1, PartnerPicking: 2, Rounds: 3, End: 4}
+const BridgeCommands  = Object.freeze({
+  CREATE_NEW_PLAYER: "create_new_player"
+})
+
+export const BridgePhases = {
+  Idle: "idle",
+  WaitingForOtherPlayers:"waiting_for_other_players", 
+  Betting: "betting",
+  PartnerPicking: "partner_picking",
+  Rounds: "rounds",
+  End: "end"
+}
 
 function Bridge(props) {
   const [phase, setPhase]=useState(BridgePhases.Idle)
@@ -18,10 +28,23 @@ function Bridge(props) {
   const [players, setPlayers] = useState([])
   const WS_URL = 'ws://localhost:8000'
   const [deck, setDeck] = useState(new Deck())
-  const [hands, setHands]=useState([])
+  const [game, setGame]=useState()
 
   const clientCallBack = (msg) => {
-    setNotif(msg)
+    switch(msg.command){
+      case BridgeCommands.CREATE_NEW_PLAYER:
+        setGame({
+          gameId: msg.gameId,
+          hands: msg.hands,
+          localPlayerId: msg.playerId,
+          phase: BridgePhases.WaitingForOtherPlayers
+        })
+        setNotif(`You are now joined in game ${msg.gameId}`)
+        break;
+      default:
+        setNotif(msg)
+        break;
+    }
   }
 
   const [bridgeClient, setbridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack.bind(this)))
@@ -30,23 +53,30 @@ function Bridge(props) {
     if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again.") }
     else { setNotif("Click New Game to Start")}
 
-    setHands([])
-    setPlayers([])
-    setPhase(BridgePhases.End)
-    bridgeClient.close()
+    setGame({})
   }
 
   const newGame = () => {
     if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again."); return}
 
     deck.shuffle()
-    setHands(deck.distribute())
-    setPhase(BridgePhases.Betting)
-    setNotif("Set your bet!")
+    var newHands = deck.distribute()
+    var firstPlayerId = Math.floor(Math.random() * 1000000)
+    var labeledHands = []
+    labeledHands.push({playerId: firstPlayerId, hand: newHands[0]})
+    labeledHands.push({playerId: null, hand: newHands[1]})
+    labeledHands.push({playerId: null, hand: newHands[1]})
+    labeledHands.push({playerId: null, hand: newHands[1]})
 
-    var localPlayerId = Math.floor(Math.random() * 1000000)
-    setPlayers([localPlayerId])
-    bridgeClient.makeNewGame(localPlayerId)
+    bridgeClient.makeNewGame(firstPlayerId, labeledHands)
+
+    setGame({
+      localPlayerId: firstPlayerId,
+      hands: labeledHands,
+      phase: BridgePhases.WaitingForOtherPlayers
+    })
+
+    setNotif("Set your bet!")
   }
 
   const inputGameCodeKeyDown = (event) =>  {
@@ -82,18 +112,20 @@ function Bridge(props) {
       </div>
       <PlayingTable phase={phase} notif={notif}/>
       {
-        players.map((player, index) => {
-          return (
-            <div key={Math.random()} id={`hands-container-${index}`}>
-              <Player
-                bridgeClient={bridgeClient}
-                playerId={players[index]}
-                active={activePlayer === index+1}
-                phase={phase}
-                hand={<Hand cards={hands[index]}/>}
-              />
-            </div>
-          )
+        game?.hands?.map((hand, index) => {
+          if(hand.playerId === game.localPlayerId){
+            return (
+              <div key={Math.random()} id={`hands-container-0`}>
+                <Player
+                  bridgeClient={bridgeClient}
+                  playerId={hand.playerId}
+                  active={activePlayer === index+1}
+                  phase={phase}
+                  hand={<Hand cards={hand.hand}/>}
+                />
+              </div>
+            )
+          }
         })
       }
     </div>

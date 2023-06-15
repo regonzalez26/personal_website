@@ -26,7 +26,7 @@ class Player extends React.Component {
         <div className={this.props.phase === BridgePhases.Rounds && this.props.active ? "player-actions-container active" : "player-actions-container"}>
           {playerActions}
           <div className="player-game-status-container">
-            {playerStatus}
+          {playerStatus}
           </div>
         </div>
         <div className="player-hands-container">

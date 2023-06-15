@@ -4,7 +4,12 @@ const BridgeEvents = Object.freeze({
   NEW_GAME_POOL_CREATED: "new_game_pool_created",
   JOIN_GAME_POOL: "join_game_pool",
   JOIN_GAME_POOL_SUCCESS: "join_game_pool_success",
+  GAME_NOT_FOUND: "game_not_found",
   BET: "bet"
+})
+
+const BridgeCommands  = Object.freeze({
+  CREATE_NEW_PLAYER: "create_new_player"
 })
 
 class BridgeClient {
@@ -15,8 +20,12 @@ class BridgeClient {
       this.connected = true
     }
 
+    this.server.onclose = () => {
+      this.connected = false
+    }
+
     this.server.onmessage = (event) => {
-      this.handleMessage(event)
+      this.handleMessage(JSON.parse(event.data))
     }
   }
 
@@ -24,11 +33,13 @@ class BridgeClient {
     switch(event.event){
       case BridgeEvents.NEW_GAME_POOL_CREATED:
         this.handleNewGamePoolCreated(event.data)
-        this.clientCallBack(event.data)
         break;
       case BridgeEvents.JOIN_GAME_POOL_SUCCESS:
         this.handleJoinGamePoolSuccess(event.data)
-        this.clientCallBack(event.data)
+        break;
+      case BridgeEvents.GAME_NOT_FOUND:
+        this.handleGameNotFound()
+        this.clientCallBack("Game Not Found")
         break;
       default:
         this.clientCallBack(event.data)
@@ -36,24 +47,38 @@ class BridgeClient {
     }
   }
 
+//-------------SERVER MESSAGE HANDLERS------------------
+
   handleJoinGamePoolSuccess(data){
-    
+    console.log(data)
+    var msg = {
+      command: BridgeCommands.CREATE_NEW_PLAYER,
+      playerId: this.localPlayerId,
+      hands: data.hands,
+      gameId: data.id
+    }
+    this.clientCallBack(msg)
   }
 
-  handleNewGamePoolCreate(data){
+  handleGameNotFound(){
+
+  }
+
+  handleNewGamePoolCreated(data){
     this.gameId = data.gameId;
   }
 
-//-------------GAME ACTIONS-----------------
+//----------------GAME ACTIONS--------------------------
 
-  makeNewGame(firstPlayerId){
+  makeNewGame(firstPlayerId, hands){
     this.localPlayerId = firstPlayerId
     var data = {
       event: BridgeEvents.NEW_GAME_POOL,
       data: {
         playerInfo: {
           id: firstPlayerId
-        }
+        },
+        hands: hands
       }
     }
     this.send(data)
@@ -64,7 +89,9 @@ class BridgeClient {
     this.send({
       event: BridgeEvents.JOIN_GAME_POOL,
       data: {
-        playerId: this.localPlayerId,
+        playerInfo: {
+          id: this.localPlayerId
+        },
         gameId: gameId
       }
     })
