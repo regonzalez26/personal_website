@@ -7,6 +7,7 @@ import Player from "./Player"
 import "./Bridge.css"
 import PlayingTable from "./PlayingTable"
 import { BridgeClient, BridgeCommands } from "./BridgeClient"
+import { BridgePlayerActions } from "./server/BridgePlayerActions"
 
 import playerIcon1 from "../bridge/assets/remote-player-icon-0.jpg"
 import playerIcon2 from "../bridge/assets/remote-player-icon-1.jpg"
@@ -20,6 +21,21 @@ export const BridgePhases = {
   PartnerPicking: "partner_picking",
   Rounds: "rounds",
   End: "end"
+}
+
+const getPlayerActionNotif = (action, actionData) => {
+  let notif = ""
+
+  switch(action){
+    case BridgePlayerActions.JOIN_GAME:
+      notif = `PLAYER #${actionData.playerInfo.id} has joined the game.\nWaiting for others...`
+      break
+    default:
+      notif = ""
+      break
+  }
+
+  return notif
 }
 
 function Bridge(props) {
@@ -53,6 +69,7 @@ function Bridge(props) {
         setGame({...stateRef.game, id: msg.gameId})
         break;
       case BridgeCommands.UPDATE_GAME:
+        setNotif(getPlayerActionNotif(msg.action, msg.actionData))
         setGame({...stateRef.game, hands: msg.game.hands})
         break;
       default:

@@ -2,25 +2,17 @@ const { WebSocketServer } = require('ws');
 const http = require('http');
 const { uuid } = require('uuidv4')
 
+const { BridgeEvents } = require("./BridgeEvents");
+const { BridgePlayerActions } = require('./BridgePlayerActions');
+
+//--------------------INIITIALIZE SERVER---------------------------
 const BRIDGE_SERVER_PORT = Object.freeze(8000)
-
-const BridgeEvents = Object.freeze({
-  SERVER_CONNECTION_SUCCEEDED: "server_connection_succeeded",
-  NEW_GAME_POOL: "new_game_pool",
-  NEW_GAME_POOL_CREATED: "new_game_pool_created",
-  JOIN_GAME_POOL: "join_game_pool",
-  JOIN_GAME_POOL_SUCCESS: "join_game_pool_success",
-  PLAYER_ACTION: "player_action",
-  GAME_NOT_FOUND: "game_not_found",
-  BET: "bet"
-})
-
 const gamePools = [];
-
 const server = http.createServer()
 const ws = new WebSocketServer({server})
 server.listen(BRIDGE_SERVER_PORT, ()=>{ console.log(`Server is running on port ${BRIDGE_SERVER_PORT}`)})
 
+//-------------------HELPER FUNCTIONS-------------------------------
 const getGameInfo = (gamePool) => {
   let hands = []
   gamePool.hands.forEach((hand)=>{
@@ -36,12 +28,12 @@ const getGameInfo = (gamePool) => {
   }
 }
 
-const updateGameForAllPlayers = (originPlayerId, gamePool) => {
+const updateGameForAllPlayers = (originPlayerId, gamePool, playerAction, playerActionData = {}) => {
   gamePool.hands.forEach((hand) => {
     if(hand.playerId != originPlayerId && hand.connection){
       hand.connection.send(JSON.stringify({
           event: BridgeEvents.PLAYER_ACTION,
-          data: getGameInfo(gamePool)
+          data: {...getGameInfo(gamePool), action: playerAction, actionData: playerActionData}
         })
       )
     }
@@ -108,7 +100,7 @@ const handleJoinGamePool = (connection, data) => {
       })
     )
 
-    updateGameForAllPlayers(data.playerInfo.id, gamePoolToJoin)
+    updateGameForAllPlayers(data.playerInfo.id, gamePoolToJoin, BridgePlayerActions.JOIN_GAME, {playerInfo: data.playerInfo})
     displayGamePools()
   } else {
     connection.send(JSON.stringify({
