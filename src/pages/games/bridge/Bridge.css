@@ -1,24 +1,26 @@
-#hands-container-0 {
-  /* position: fixed;
-  left: calc(0.5*(100vw - 196px) + 196px);
-  top: 80%; */
-  position: absolute;
-  left: 400px;
+#bridge-game-container {
+  width: 100%;
 }
 
-#hands-container-1 {
-  position: absolute;
-  left: 1350px;
+#bridge-playing-table {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
-#hands-container-2 {
-  position: absolute;
-  left: 400px;
-  top: 450px;
+.hands-container {
+  position: relative;
+  display: block;
+  height: 400px;
+  width: 400px;
+  /* background-color: green;
+  border: 10px solid lightgreen; */
 }
 
-#hands-container-3 {
-  position: absolute;
-  left: 1350px;
-  top: 450px;
+.hands-container-local {
+  position: fixed;
+  bottom: 0px;
+  left: 50%;
+  /* background-color: green;
+  border: 10px solid lightgreen; */
 }

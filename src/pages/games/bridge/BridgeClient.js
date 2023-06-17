@@ -54,7 +54,6 @@ export class BridgeClient {
 //-------------SERVER MESSAGE HANDLERS------------------
 
   handleJoinGamePoolSuccess(data){
-    console.log(data)
     var msg = {
       command: BridgeCommands.CREATE_NEW_PLAYER,
       playerId: this.localPlayerId,

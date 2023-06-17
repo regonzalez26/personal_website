@@ -1,7 +1,7 @@
 #playing-table-container {
   position: absolute;
-  margin-left: calc(0.5*(100vw - 696px) - 54px);
-  height: 500px;
+  margin-left: calc(0.4*(100vw - 696px) - 54px);
+  margin-top: 200px;
   width: 500px;
 
   user-select: none;

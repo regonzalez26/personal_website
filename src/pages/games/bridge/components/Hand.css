@@ -1,3 +1,5 @@
-.hand-row-container {
-  position: absolute;
+.hand {
+  position: relative;
+  width: 200px;
+  height: 100px;
 }

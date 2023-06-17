@@ -8,6 +8,11 @@ import "./Bridge.css"
 import PlayingTable from "./PlayingTable"
 import { BridgeClient, BridgeCommands } from "./BridgeClient"
 
+import playerIcon1 from "../bridge/assets/remote-player-icon-0.jpg"
+import playerIcon2 from "../bridge/assets/remote-player-icon-1.jpg"
+import playerIcon3 from "../bridge/assets/remote-player-icon-2.jpg"
+import playerIcon4 from "../bridge/assets/remote-player-icon-3.jpg"
+
 export const BridgePhases = {
   Idle: "idle",
   WaitingForOtherPlayers:"waiting_for_other_players", 
@@ -25,6 +30,12 @@ function Bridge(props) {
   const [deck, setDeck] = useState(new Deck())
   const [game, setGame]= useState({})
   const stateRef = useRef()
+  const playerIcons = [
+    playerIcon1,
+    playerIcon2,
+    playerIcon3,
+    playerIcon4
+  ]
 
   stateRef.game = game
 
@@ -43,7 +54,7 @@ function Bridge(props) {
         setGame({...stateRef.game, id: msg.gameId})
         break;
       case BridgeCommands.UPDATE_GAME:
-        setGame(msg.game)
+        setGame({...stateRef.game, hands: msg.game.hands})
         break;
       default:
         setNotif(msg)
@@ -69,8 +80,8 @@ function Bridge(props) {
     var labeledHands = []
     labeledHands.push({playerId: firstPlayerId, hand: newHands[0]})
     labeledHands.push({playerId: null, hand: newHands[1]})
-    labeledHands.push({playerId: null, hand: newHands[1]})
-    labeledHands.push({playerId: null, hand: newHands[1]})
+    labeledHands.push({playerId: null, hand: newHands[2]})
+    labeledHands.push({playerId: null, hand: newHands[3]})
 
     bridgeClient.makeNewGame(firstPlayerId, labeledHands)
 
@@ -115,22 +126,28 @@ function Bridge(props) {
           }
       </div>
       <PlayingTable phase={game.phase} notif={notif}/>
+      <div id="bridge-playing-table">
       {
         game?.hands?.map((hand, index) => {
+          let isLocalPlayer = hand.playerId === game.localPlayerId
+
             return (
-              <div key={Math.random()} id={`hands-container-${index}`}>
+              <div key={Math.random()} className={isLocalPlayer ? `hands-container-local` : `hands-container`}>
                 <Player
                   bridgeClient={bridgeClient}
                   playerId={hand.playerId}
-                  active={activePlayer === index+1}
                   phase={game.phase}
                   hand={<Hand cards={hand.hand}/>}
-                  localPlayer={hand.playerId === game.localPlayerId}
+                  isLocalPlayer={isLocalPlayer}
+                  playerIcon = {playerIcons[index]}
+
+                  active={activePlayer === index+1}
                 />
               </div>
             )
         })
       }
+      </div>
     </div>
   )
 }

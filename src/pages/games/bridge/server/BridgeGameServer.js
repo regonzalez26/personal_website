@@ -48,6 +48,8 @@ const updateGameForAllPlayers = (originPlayerId, gamePool) => {
   })
 }
 
+//-----------------------------EVENT HANDLERS-----------------------------------
+
 const handleNewGamePool = (connection, data) => {
   let hands = data.hands
 
@@ -76,7 +78,6 @@ const handleNewGamePool = (connection, data) => {
 }
 
 const handleJoinGamePool = (connection, data) => {
-  console.log("Joining game pool")
   var gamePoolToJoin
 
   gamePools.forEach((gamePool) => {
@@ -89,6 +90,7 @@ const handleJoinGamePool = (connection, data) => {
     for(let i=0; i<gamePoolToJoin.hands.length; i++){
       if(!gamePoolToJoin.hands[i].playerId){
         gamePoolToJoin.hands[i].playerId = data.playerInfo.id
+        gamePoolToJoin.hands[i].connection = connection
         break
       }
     }
@@ -125,6 +127,8 @@ const handleBet = (connection, data) => {
 const handleDefault = (data) => {
   console.log(`Received data: ${JSON.stringify(data)}`)
 }
+
+//-----------------------------HELPER FUNCTIONS---------------------------------
 
 const displayGamePools = () => {
   if(gamePools.length == 0){
