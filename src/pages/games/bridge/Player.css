@@ -1,14 +1,13 @@
 .player-actions-container {
   position: absolute;
+  top: 200px;
   width: 300px;
   padding: 12px;
-  top: 0px;
-  right: 250px;
 
   text-align: right;
 
   background-color: #fff;
-  border-radius: 12px 12px 0 12px;
+  border-radius: 12px;
   border: 1px solid black;
 
   z-index: 200;
@@ -23,13 +22,13 @@
 }
 
 .player-game-status-container {
-  position: absolute;
-  height: 24px;
+  position: relative;
   width: 200px;
-  right: 0px;
+  top: 48px;
+  left: 96px;
   bottom: -25px;
   padding-right: 12px;
   border-top: 1px solid black;
-  border-radius: 0 0 12px 12px;
+  border-radius: 12px;
   background-color: lightgray;
 }

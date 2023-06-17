@@ -18,7 +18,6 @@ export const BridgePhases = {
 }
 
 function Bridge(props) {
-  const [phase, setPhase]=useState(BridgePhases.Idle)
   const [activePlayer, _setActivePlayer] = useState(-1)
   const [notif, setNotif] = useState("Click New Game to Start")
   const [players, setPlayers] = useState([])
@@ -33,7 +32,7 @@ function Bridge(props) {
     switch(msg.command){
       case BridgeCommands.CREATE_NEW_PLAYER:
         setGame({
-          gameId: msg.gameId,
+          id: msg.gameId,
           hands: msg.hands,
           localPlayerId: msg.playerId,
           phase: BridgePhases.WaitingForOtherPlayers
@@ -41,7 +40,10 @@ function Bridge(props) {
         setNotif(`You are now joined in game ${msg.gameId}`)
         break;
       case BridgeCommands.SET_GAME_ID:
-        setGame({...stateRef.game, gameId: msg.gameId})
+        setGame({...stateRef.game, id: msg.gameId})
+        break;
+      case BridgeCommands.UPDATE_GAME:
+        setGame(msg.game)
         break;
       default:
         setNotif(msg)
@@ -100,7 +102,7 @@ function Bridge(props) {
   const toolbars = [
     {label: "New Game", fxn: newGame},
     {label: "Join Game", fxn: joinGame},
-    {label: "End Game", fxn: endGame},
+    //{label: "End Game", fxn: endGame},
   ]
 
   return (
@@ -112,22 +114,21 @@ function Bridge(props) {
             })
           }
       </div>
-      <PlayingTable phase={phase} notif={notif}/>
+      <PlayingTable phase={game.phase} notif={notif}/>
       {
         game?.hands?.map((hand, index) => {
-          if(hand.playerId === game.localPlayerId){
             return (
-              <div key={Math.random()} id={`hands-container-0`}>
+              <div key={Math.random()} id={`hands-container-${index}`}>
                 <Player
                   bridgeClient={bridgeClient}
                   playerId={hand.playerId}
                   active={activePlayer === index+1}
-                  phase={phase}
+                  phase={game.phase}
                   hand={<Hand cards={hand.hand}/>}
+                  localPlayer={hand.playerId === game.localPlayerId}
                 />
               </div>
             )
-          }
         })
       }
     </div>

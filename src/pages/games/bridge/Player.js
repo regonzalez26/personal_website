@@ -21,6 +21,7 @@ class Player extends React.Component {
     playerStatus = this.props.phase === BridgePhases.Betting ? "Set your bet!" : "Waiting for others..."
     playerStatus = `#${this.playerId}:` +  playerStatus
 
+    if(this.playerId){
     return (
       <div className="player-container">
         <div className={this.props.phase === BridgePhases.Rounds && this.props.active ? "player-actions-container active" : "player-actions-container"}>
@@ -34,6 +35,7 @@ class Player extends React.Component {
         </div>
       </div>
     )
+    }
   }
 }
 

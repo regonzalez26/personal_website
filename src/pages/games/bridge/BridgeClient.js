@@ -5,12 +5,14 @@ const BridgeEvents = Object.freeze({
   JOIN_GAME_POOL: "join_game_pool",
   JOIN_GAME_POOL_SUCCESS: "join_game_pool_success",
   GAME_NOT_FOUND: "game_not_found",
+  PLAYER_ACTION: "player_action",
   BET: "bet"
 })
 
 export const BridgeCommands  = Object.freeze({
   CREATE_NEW_PLAYER: "create_new_player",
-  SET_GAME_ID: "set_game_id"
+  SET_GAME_ID: "set_game_id",
+  UPDATE_GAME: "update_game"
 })
 
 export class BridgeClient {
@@ -40,10 +42,11 @@ export class BridgeClient {
         break;
       case BridgeEvents.GAME_NOT_FOUND:
         this.handleGameNotFound()
-        this.clientCallBack("Game Not Found")
         break;
+      case BridgeEvents.PLAYER_ACTION:
+        this.handlePlayerAction(event.data)
       default:
-        this.clientCallBack(event.data)
+        console.log(event)
         break;
     }
   }
@@ -62,7 +65,7 @@ export class BridgeClient {
   }
 
   handleGameNotFound(){
-
+    this.clientCallBack("Game Not Found")
   }
 
   handleNewGamePoolCreated(data){
@@ -70,6 +73,15 @@ export class BridgeClient {
       command: BridgeCommands.SET_GAME_ID,
       gameId: data.gameId
     }
+    this.clientCallBack(msg)
+  }
+
+  handlePlayerAction(data){
+    let msg = {
+      command: BridgeCommands.UPDATE_GAME,
+      game: data
+    }
+
     this.clientCallBack(msg)
   }
 

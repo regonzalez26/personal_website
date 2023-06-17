@@ -10,6 +10,7 @@ const BridgeEvents = Object.freeze({
   NEW_GAME_POOL_CREATED: "new_game_pool_created",
   JOIN_GAME_POOL: "join_game_pool",
   JOIN_GAME_POOL_SUCCESS: "join_game_pool_success",
+  PLAYER_ACTION: "player_action",
   GAME_NOT_FOUND: "game_not_found",
   BET: "bet"
 })
@@ -20,13 +21,49 @@ const server = http.createServer()
 const ws = new WebSocketServer({server})
 server.listen(BRIDGE_SERVER_PORT, ()=>{ console.log(`Server is running on port ${BRIDGE_SERVER_PORT}`)})
 
+const getGameInfo = (gamePool) => {
+  let hands = []
+  gamePool.hands.forEach((hand)=>{
+    let filteredHandInfo = {}
+    filteredHandInfo.playerId = hand.playerId,
+    filteredHandInfo.hand = hand.hand
+    hands.push(filteredHandInfo)
+  })
+
+  return {
+    id: gamePool.id,
+    hands: hands
+  }
+}
+
+const updateGameForAllPlayers = (originPlayerId, gamePool) => {
+  gamePool.hands.forEach((hand) => {
+    if(hand.playerId != originPlayerId && hand.connection){
+      hand.connection.send(JSON.stringify({
+          event: BridgeEvents.PLAYER_ACTION,
+          data: getGameInfo(gamePool)
+        })
+      )
+    }
+  })
+}
+
 const handleNewGamePool = (connection, data) => {
+  let hands = data.hands
+
+  for(let i=0; i<hands.length; i++){
+    if(hands[i].playerId){
+      hands[i].connection = connection
+    }
+  }
+
   var gamePool = {
     id: uuid(),
-    connection: connection,
-    hands: data.hands
+    hands: hands
   }
+
   gamePools.push(gamePool)
+
   connection.send(JSON.stringify({
       event: BridgeEvents.NEW_GAME_POOL_CREATED,
       data: {
@@ -64,6 +101,8 @@ const handleJoinGamePool = (connection, data) => {
         }
       })
     )
+
+    updateGameForAllPlayers(data.playerInfo.id, gamePoolToJoin)
 
     displayGamePools()
   } else {
