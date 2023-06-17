@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./NavigationPanel.css"
-import displayPicture from "../assets/display-picture.jpg"
+//import displayPicture from "../assets/display-picture.jpg"
 import NavigationMenu from "./NavigationMenu";
 
 class NavigationPanel extends React.Component {

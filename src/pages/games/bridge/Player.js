@@ -1,7 +1,6 @@
 import React from "react"
 import { BridgePhases } from "./Bridge"
 import "./Player.css"
-import PlayerBetOptions from "./PlayerBetOptions"
 
 class Player extends React.Component {
   constructor(props){
@@ -13,10 +12,10 @@ class Player extends React.Component {
 
   render(){
     // --------- PLAYER ACTIONS-------------------------
-    let playerActions
-    if(this.props.phase === BridgePhases.Betting){
-      playerActions = <PlayerBetOptions playerId={this.playerId} bridgeClient={this.bridgeClient}/>
-    }
+    // let playerActions
+    // if(this.props.phase === BridgePhases.Betting){
+    //   playerActions = <PlayerBetOptions playerId={this.playerId} bridgeClient={this.bridgeClient}/>
+    // }
 
     // --------- PLAYER STATUS TEXT---------------------
     let playerStatus = this.props.phase === BridgePhases.Rounds && this.props.active ? "Your turn!" : "Waiting for others..."

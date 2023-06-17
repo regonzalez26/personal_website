@@ -36,18 +36,19 @@ export class BridgeClient {
     switch(event.event){
       case BridgeEvents.NEW_GAME_POOL_CREATED:
         this.handleNewGamePoolCreated(event.data)
-        break;
+        break
       case BridgeEvents.JOIN_GAME_POOL_SUCCESS:
         this.handleJoinGamePoolSuccess(event.data)
-        break;
+        break
       case BridgeEvents.GAME_NOT_FOUND:
         this.handleGameNotFound()
-        break;
+        break
       case BridgeEvents.PLAYER_ACTION:
         this.handlePlayerAction(event.data)
+        break
       default:
         console.log(event)
-        break;
+        break
     }
   }
 

@@ -23,11 +23,10 @@ export const BridgePhases = {
 }
 
 function Bridge(props) {
-  const [activePlayer, _setActivePlayer] = useState(-1)
+  const [activePlayer] = useState(-1)
   const [notif, setNotif] = useState("Click New Game to Start")
-  const [players, setPlayers] = useState([])
   const WS_URL = 'ws://localhost:8000'
-  const [deck, setDeck] = useState(new Deck())
+  const [deck] = useState(new Deck())
   const [game, setGame]= useState({})
   const stateRef = useRef()
   const playerIcons = [
@@ -62,14 +61,15 @@ function Bridge(props) {
     }
   },[])
 
-  const [bridgeClient, setbridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))
+  const [bridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))
   
-  const endGame = () => {
-    if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again.") }
-    else { setNotif("Click New Game to Start")}
+  // const endGame = () => {
+  //   if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again.") }
+  //   else { setNotif("Click New Game to Start")}
 
-    setGame({})
-  }
+  //   setGame({})
+  //   setbridgeClient({})
+  // }
 
   const newGame = () => {
     if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again."); return}
