@@ -83,6 +83,8 @@ const handleJoinGamePool = (connection, data) => {
 
   gamePools.forEach((gamePool) => {
     if(gamePool.id === data.gameId){
+      if(gamePool.hands.filter((h)=>h.playerId).length >= 4){ return }
+
       gamePoolToJoin = gamePool
     }
   })
@@ -107,7 +109,6 @@ const handleJoinGamePool = (connection, data) => {
     )
 
     updateGameForAllPlayers(data.playerInfo.id, gamePoolToJoin)
-
     displayGamePools()
   } else {
     connection.send(JSON.stringify({

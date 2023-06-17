@@ -56,7 +56,7 @@ function Bridge(props) {
         setGame({...stateRef.game, hands: msg.game.hands})
         break;
       default:
-        setNotif(msg)
+        setNotif(JSON.stringify(msg))
         break;
     }
   },[])
