@@ -24,7 +24,7 @@ export const BridgePhases = {
 
 function Bridge(props) {
   const [activePlayer] = useState(-1)
-  const [notif, setNotif] = useState("Click New Game to Start")
+  const [notif, setNotif] = useState("")
   const WS_URL = 'ws://localhost:8000'
   const [deck] = useState(new Deck())
   const [game, setGame]= useState({})
@@ -45,7 +45,7 @@ function Bridge(props) {
           id: msg.gameId,
           hands: msg.hands,
           localPlayerId: msg.playerId,
-          phase: BridgePhases.WaitingForOtherPlayers
+          phase: msg.phase
         })
         setNotif(`You are now joined in game ${msg.gameId}`)
         break;
@@ -90,8 +90,6 @@ function Bridge(props) {
       hands: labeledHands,
       phase: BridgePhases.WaitingForOtherPlayers
     })
-
-    setNotif("Set your bet!")
   }
 
   const inputGameCodeKeyDown = (event) =>  {
@@ -115,6 +113,8 @@ function Bridge(props) {
     {label: "Join Game", fxn: joinGame},
     //{label: "End Game", fxn: endGame},
   ]
+
+  console.log(game)
 
   return (
     <div id="bridge-game-container">

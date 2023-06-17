@@ -61,7 +61,8 @@ const handleNewGamePool = (connection, data) => {
 
   var gamePool = {
     id: uuid(),
-    hands: hands
+    hands: hands,
+    phase: data.phase
   }
 
   gamePools.push(gamePool)
@@ -99,7 +100,8 @@ const handleJoinGamePool = (connection, data) => {
         event: BridgeEvents.JOIN_GAME_POOL_SUCCESS,
         data: {
           id: gamePoolToJoin.id,
-          hands: gamePoolToJoin.hands
+          hands: gamePoolToJoin.hands,
+          phase: gamePoolToJoin.phase
         }
       })
     )

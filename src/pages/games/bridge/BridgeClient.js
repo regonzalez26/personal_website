@@ -1,3 +1,5 @@
+import { BridgePhases } from "./Bridge"
+
 const BridgeEvents = Object.freeze({
   SERVER_CONNECTION_SUCCEEDED: "server_connection_succeeded",
   NEW_GAME_POOL: "new_game_pool",
@@ -59,7 +61,8 @@ export class BridgeClient {
       command: BridgeCommands.CREATE_NEW_PLAYER,
       playerId: this.localPlayerId,
       hands: data.hands,
-      gameId: data.id
+      gameId: data.id,
+      phase: data.phase
     }
     this.clientCallBack(msg)
   }
@@ -95,7 +98,8 @@ export class BridgeClient {
         playerInfo: {
           id: firstPlayerId
         },
-        hands: hands
+        hands: hands,
+        phase: BridgePhases.WaitingForOtherPlayers
       }
     }
     this.send(data)
