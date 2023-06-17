@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from "react"
+import React, { useCallback, useRef, useState, useEffect } from "react"
 
 import Deck from "./components/Deck"
 import Hand from "./components/Hand"
@@ -80,6 +80,13 @@ function Bridge(props) {
 
   const [bridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))
   
+  useEffect(()=>{
+    return () => {
+      bridgeClient.close()
+    }
+  },[])
+
+
   // const endGame = () => {
   //   if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again.") }
   //   else { setNotif("Click New Game to Start")}
