@@ -64,7 +64,7 @@
 #bridge-game-notif-bar {
   position: fixed;
   bottom: 0px;
-  left: 196px;
+  margin-left: 0px;
 
   padding: 12px;
 
@@ -99,11 +99,10 @@
   right: 24px;
 }
 
-
 .hands-container-0 {
   position: fixed;
+  width: inherit;
   display: flex;
   justify-content: center;
-  width: calc(100% - 196px);
   bottom: 0px;
 }

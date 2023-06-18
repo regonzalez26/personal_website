@@ -4,6 +4,9 @@ import NavigationMenuItem from "./NavigationMenuItem";
 
 import "./NavigationMenu.css"
 
+import GameIcon from "../assets/images/game-icon.png"
+import HomeIcon from  "../assets/images/home-icon.png"
+
 class NavigationMenu extends React.Component {
   state = {
     menuItemIsSelected: {
@@ -24,10 +27,20 @@ class NavigationMenu extends React.Component {
   render(){
     return (
       <div id="navigation-menu-container">
-        <NavigationMenuItem route="/home" id="home" selected={this.state.menuItemIsSelected.home} handleClick={this.handleClick.bind(this)} label="Home" />
-        <NavigationMenuItem route= "/blog" id="writings" selected={this.state.menuItemIsSelected.writings} handleClick={this.handleClick.bind(this)} label="Blog" />
-        <NavigationMenuItem route="/contact" id="contact" selected={this.state.menuItemIsSelected.contact} handleClick={this.handleClick.bind(this)} label="Contact" />
-        <NavigationMenuItem route="/games" id="games" selected={this.state.menuItemIsSelected.games} handleClick={this.handleClick.bind(this)} label="Games" />
+        <NavigationMenuItem
+          route="/home"
+          id="home"
+          selected={this.state.menuItemIsSelected.home}
+          handleClick={this.handleClick.bind(this)}
+          image={HomeIcon}
+        />
+        <NavigationMenuItem
+          route="/games"
+          id="games"
+          selected={this.state.menuItemIsSelected.games}
+          handleClick={this.handleClick.bind(this)}
+          image={GameIcon}
+        />
       </div>
     )
   }

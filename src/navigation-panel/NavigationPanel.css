@@ -1,11 +1,10 @@
 #navigation-panel-container {
   display: inline-block;
-  width: 196px;
+  width: 36px;
   height: 100vh;
 
-  background-color: #d7f4e6;
+  background-color: #141764;
   transition: 0.2s ease-in;
-  border-right: 2px solid white;
 }
 
 #display-picture {
