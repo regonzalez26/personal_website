@@ -1,6 +1,5 @@
 const { WebSocketServer } = require('ws');
 const http = require('http');
-const { uuid } = require('uuidv4')
 
 const { BridgeEvents } = require("./BridgeEvents");
 const { BridgePlayerActions } = require('./BridgePlayerActions');
@@ -52,7 +51,7 @@ const handleNewGamePool = (connection, data) => {
   }
 
   var gamePool = {
-    id: uuid(),
+    id: Math.floor(Math.random() * 1000000).toString(),
     hands: hands,
     phase: data.phase
   }
@@ -161,6 +160,6 @@ ws.on('connection', function(connection) {
   })
   
     connection.on("close",(ws, n, reason) => {
-      console.log(`Connection for ${n} closed`)
+      console.log(`Connection for ${ws} closed`)
     })
 })

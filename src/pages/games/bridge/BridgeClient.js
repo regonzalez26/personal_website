@@ -11,6 +11,7 @@ export const BridgeCommands  = Object.freeze({
 export class BridgeClient {
   constructor(url, callBack){
     this.server = new WebSocket(url)
+    this.connected = false
     this.clientCallBack = callBack
     this.server.onopen = () => {
       this.connected = true

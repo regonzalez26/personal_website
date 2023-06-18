@@ -11,16 +11,8 @@ class Player extends React.Component {
   }
 
   render(){
-    // --------- PLAYER ACTIONS-------------------------
-    // let playerActions
-    // if(this.props.phase === BridgePhases.Betting){
-    //   playerActions = <PlayerBetOptions playerId={this.playerId} bridgeClient={this.bridgeClient}/>
-    // }
-
     // --------- PLAYER STATUS TEXT---------------------
-    let playerStatus = this.props.phase === BridgePhases.Rounds && this.props.active ? "Your turn!" : "Waiting for others..."
-    playerStatus = this.props.phase === BridgePhases.Betting ? "Set your bet!" : "Waiting for others..."
-    playerStatus = `#${this.playerId}:` +  playerStatus
+    let playerStatus = `#${this.playerId}`
 
     if(this.playerId){
     return (

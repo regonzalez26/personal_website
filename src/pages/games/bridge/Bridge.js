@@ -28,7 +28,7 @@ const getPlayerActionNotif = (action, actionData) => {
 
   switch(action){
     case BridgePlayerActions.JOIN_GAME:
-      notif = `PLAYER #${actionData.playerInfo.id} has joined the game.\nWaiting for others...`
+      notif = <div>PLAYER {actionData.playerInfo.id} has joined the game.<br></br>Waiting for others...</div>
       break
     default:
       notif = ""
@@ -40,7 +40,8 @@ const getPlayerActionNotif = (action, actionData) => {
 
 function Bridge(props) {
   const [activePlayer] = useState(-1)
-  const [notif, setNotif] = useState("")
+  const [notif, setNotif] = useState()
+  const [prompt, setPrompt] = useState()
   const WS_URL = 'ws://localhost:8000'
   const [deck] = useState(new Deck())
   const [game, setGame]= useState({})
@@ -51,6 +52,14 @@ function Bridge(props) {
     playerIcon3,
     playerIcon4
   ]
+
+  const setDisappearingNotif = (notif, timeout = 5000) => {
+    setNotif(notif)
+
+    setTimeout(()=>{
+      setNotif()
+    }, timeout)
+  }
 
   stateRef.game = game
 
@@ -63,13 +72,13 @@ function Bridge(props) {
           localPlayerId: msg.playerId,
           phase: msg.phase
         })
-        setNotif(`You are now joined in game ${msg.gameId}`)
+        setDisappearingNotif(<div>You have joined game <br></br>{msg.gameId}</div>)
         break;
       case BridgeCommands.SET_GAME_ID:
         setGame({...stateRef.game, id: msg.gameId})
         break;
       case BridgeCommands.UPDATE_GAME:
-        setNotif(getPlayerActionNotif(msg.action, msg.actionData))
+        setDisappearingNotif(getPlayerActionNotif(msg.action, msg.actionData))
         setGame({...stateRef.game, hands: msg.game.hands})
         break;
       default:
@@ -119,58 +128,69 @@ function Bridge(props) {
   const inputGameCodeKeyDown = (event) =>  {
     if(event.keyCode === 13){
       var gameCode = event.currentTarget.value
-      setNotif(`Joining Game No. ${gameCode}`)
+      setPrompt()
       bridgeClient.joinGame(gameCode)
     }
   }
 
   const joinGame = () => {
-    setNotif((
+    setPrompt((
       <div id="enter-game-code-container">
-        Enter Game Code: <input onKeyDown={inputGameCodeKeyDown} type="text" id="input-game-code"></input>
+        <p>Enter Game Code</p>
+        <input onKeyDown={inputGameCodeKeyDown} type="text" id="input-game-code"></input>
       </div>
     ))
   }
 
   const toolbars = [
     {label: "New Game", fxn: newGame},
-    {label: "Join Game", fxn: joinGame},
-    //{label: "End Game", fxn: endGame},
+    {label: "Join Game", fxn: joinGame}
   ]
 
   console.log(game)
 
+  const arrangement = []
+  game?.hands?.forEach((hand)=>{
+    if(hand.playerId === game.localPlayerId){
+      arrangement.unshift(hand)
+    } else {
+      arrangement.push(hand)
+    }
+  })
+
   return (
     <div id="bridge-game-container">
-      <div className="toolbars">
-          {
-            toolbars.map((toolbar) => {
-              return <button key={Math.random()} onClick={()=>{toolbar.fxn()}}>{toolbar.label}</button>
-            })
-          }
+      <div id="bridge-game-header">
+        {
+          toolbars.map((toolbar, index) => {
+            let headerItem = <button key={Math.random()} onClick={()=>{toolbar.fxn()}}>{toolbar.label}</button>
+            if(index >= toolbars.length/2)
+              headerItem = [<div id="bridge-game-title">Bridge</div>, headerItem]
+            return headerItem            
+          })
+        }
       </div>
-      <PlayingTable phase={game.phase} notif={notif}/>
+      <div id="bridge-game-notif-bar">{notif}</div>
+      {prompt}
       <div id="bridge-playing-table">
-      {
-        game?.hands?.map((hand, index) => {
-          let isLocalPlayer = hand.playerId === game.localPlayerId
+        {
+          arrangement.map((hand, index) => {
+              return (
+                <div key={Math.random()} className={`hands-container-${index}`}>
+                  <Player
+                    bridgeClient={bridgeClient}
+                    playerId={hand.playerId}
+                    phase={game.phase}
+                    hand={<Hand cards={hand.hand}/>}
+                    isLocalPlayer={index === 0}
+                    playerIcon = {playerIcons[index]}
 
-            return (
-              <div key={Math.random()} className={isLocalPlayer ? `hands-container-local` : `hands-container`}>
-                <Player
-                  bridgeClient={bridgeClient}
-                  playerId={hand.playerId}
-                  phase={game.phase}
-                  hand={<Hand cards={hand.hand}/>}
-                  isLocalPlayer={isLocalPlayer}
-                  playerIcon = {playerIcons[index]}
-
-                  active={activePlayer === index+1}
-                />
-              </div>
-            )
-        })
-      }
+                    active={activePlayer === index+1}
+                  />
+                </div>
+              )
+          })
+        }
       </div>
     </div>
   )

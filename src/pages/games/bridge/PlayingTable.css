@@ -18,16 +18,3 @@
   font-size: 24px;
   color: #fff;
 }
-
-#input-game-code {
-  height: 24px;
-  border-radius: 12px;
-  margin-left: 12px;
-}
-
-#enter-game-code-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 24px;
-}

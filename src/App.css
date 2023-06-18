@@ -1,3 +1,15 @@
+@font-face {
+  font-family: "CS Gordon";   /*Can be any text*/
+  src: local("CS Gordon"),
+    url("./assets/fonts/cs-gordon-serif.otf") format("truetype");
+}
+
+@font-face {
+  font-family: "Glacial Indifference";   /*Can be any text*/
+  src: local("Glacial Indifference"),
+    url("./assets/fonts/glacial-indifference.otf") format("truetype");
+}
+
 .App {
   display: flex;
   flex-direction: row;

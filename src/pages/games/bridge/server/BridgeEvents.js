@@ -8,4 +8,4 @@ const BridgeEvents = Object.freeze({
   PLAYER_ACTION: "player_action"
 })
 
-module.exports = { BridgeEvents}
+module.exports = { BridgeEvents }

@@ -1,5 +1,8 @@
 import './App.css';
 
+import './assets/fonts/cs-gordon-serif.otf'
+import './assets/fonts/glacial-indifference.otf'
+
 import HomePage from './pages/home/Home';
 import BlogPage from './pages/blog/BlogPage';
 import ContactPage from './pages/contact/ContactPage';

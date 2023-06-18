@@ -11,9 +11,6 @@ function GamePage(props){
       className="page-container"
       style={{backgroundImage: `url(${tableBg})`}}
     >
-      <div className="header">
-        Bridge
-      </div>
       <Bridge />
     </div>
   )
