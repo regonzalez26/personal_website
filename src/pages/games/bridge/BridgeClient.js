@@ -1,6 +1,5 @@
 import { BridgePhases } from "./Bridge"
 import { BridgeEvents } from "./server/BridgeEvents"
-import { BridgePlayerActions } from "./server/BridgePlayerActions"
 
 export const BridgeCommands  = Object.freeze({
   CREATE_NEW_PLAYER: "create_new_player",

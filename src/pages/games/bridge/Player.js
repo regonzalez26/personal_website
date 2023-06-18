@@ -1,5 +1,4 @@
 import React from "react"
-import { BridgePhases } from "./Bridge"
 import "./Player.css"
 
 class Player extends React.Component {

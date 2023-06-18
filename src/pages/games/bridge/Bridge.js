@@ -5,7 +5,6 @@ import Hand from "./components/Hand"
 import Player from "./Player"
 
 import "./Bridge.css"
-import PlayingTable from "./PlayingTable"
 import { BridgeClient, BridgeCommands } from "./BridgeClient"
 import { BridgePlayerActions } from "./server/BridgePlayerActions"
 
@@ -93,7 +92,7 @@ function Bridge(props) {
     return () => {
       bridgeClient.close()
     }
-  },[])
+  },[bridgeClient])
 
 
   // const endGame = () => {
@@ -165,10 +164,9 @@ function Bridge(props) {
       <div id="bridge-game-header">
         {
           toolbars.map((toolbar, index) => {
-            let headerItem = <button key={Math.random()} onClick={()=>{toolbar.fxn()}}>{toolbar.label}</button>
-            if(index >= toolbars.length/2)
-              headerItem = [<div id="bridge-game-title">Bridge</div>, headerItem]
-            return headerItem            
+            let toolbarButton = <button key={Math.random()} onClick={()=>{toolbar.fxn()}}>{toolbar.label}</button>
+            let titleBar = index >= toolbars.length/2 ? <div key={Math.random()} id="bridge-game-title">Bridge</div> : null
+            return [titleBar, toolbarButton]
           })
         }
       </div>
@@ -180,6 +178,7 @@ function Bridge(props) {
               return (
                 <div key={Math.random()} className={`hands-container-${index}`}>
                   <Player
+                    key={Math.random()}
                     bridgeClient={bridgeClient}
                     playerId={hand.playerId}
                     phase={game.phase}
