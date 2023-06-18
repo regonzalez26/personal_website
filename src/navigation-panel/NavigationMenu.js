@@ -6,44 +6,27 @@ import "./NavigationMenu.css"
 
 import GameIcon from "../assets/images/game-icon.png"
 import HomeIcon from  "../assets/images/home-icon.png"
+import { useLocation } from "react-router-dom";
 
-class NavigationMenu extends React.Component {
-  state = {
-    menuItemIsSelected: {
-      home: true,
-      writings: false,
-      contact: false
-    }
-  }
-
-  handleClick = event => {
-    let selection = {}
-    selection[event.currentTarget.id] = true
-
-
-    this.setState({menuItemIsSelected: selection})
-  }
-
-  render(){
-    return (
+function NavigationMenu (){
+  const location = useLocation()
+  
+  return (
       <div id="navigation-menu-container">
         <NavigationMenuItem
           route="/home"
           id="home"
-          selected={this.state.menuItemIsSelected.home}
-          handleClick={this.handleClick.bind(this)}
+          selected={location.pathname === "/home"}
           image={HomeIcon}
         />
         <NavigationMenuItem
           route="/games"
           id="games"
-          selected={this.state.menuItemIsSelected.games}
-          handleClick={this.handleClick.bind(this)}
+          selected={location.pathname === "/games"}
           image={GameIcon}
         />
       </div>
-    )
-  }
+  )
 }
 
 export default NavigationMenu

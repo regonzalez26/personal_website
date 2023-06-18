@@ -11,7 +11,6 @@ class NavigationMenuItem extends React.Component{
           <button
             id={this.props.id}
             className={this.props.selected? "selected" : ""}
-            onClick={this.props.handleClick}
             type="text"
             style = {{backgroundImage: `url(${this.props.image})`}}
           />
