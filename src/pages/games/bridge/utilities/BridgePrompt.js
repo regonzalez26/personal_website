@@ -1,6 +1,7 @@
 export const BridgePrompts = {
   SERVER_DOWN: ["Unable to connect to server", "Try again"],
-  ENTER_GAME_CODE: ["Enter game code"]
+  ENTER_GAME_CODE: ["Enter game code"],
+  GAME_NOT_FOUND: ["Game not found"]
 }
 
 export function BridgePrompt(props){

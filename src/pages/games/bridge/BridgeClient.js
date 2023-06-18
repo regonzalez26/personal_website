@@ -1,6 +1,7 @@
 import { BridgePhases } from "./BridgePhases"
 import { BridgeEvents } from "./server/BridgeEvents"
 import { BridgeCommands } from "./BridgeCommands"
+import { BridgePrompts } from "./utilities/BridgePrompt"
 
 export class BridgeClient {
   constructor(url, callBack){
@@ -58,7 +59,11 @@ export class BridgeClient {
   }
 
   handleGameNotFound(){
-    this.clientCallBack("Game Not Found")
+    let msg = {
+      command: BridgeCommands.PROMPT,
+      prompt: BridgePrompts.GAME_NOT_FOUND
+    }
+    this.clientCallBack(msg)
   }
 
   handleNewGamePoolCreated(data){

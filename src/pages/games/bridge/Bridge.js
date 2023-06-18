@@ -59,6 +59,9 @@ function Bridge(props) {
         setDisappearingNotif(getPlayerActionNotif(msg.action, msg.actionData))
         setGame({...stateRef.game, hands: msg.game.hands})
         break;
+      case BridgeCommands.PROMPT:
+        setPrompt({prompt: msg.prompt})
+        break
       default:
         setNotif(JSON.stringify(msg))
         break;
