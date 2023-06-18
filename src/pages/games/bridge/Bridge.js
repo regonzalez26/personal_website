@@ -111,13 +111,14 @@ function Bridge(props) {
     var newHands = deck.distribute()
     var firstPlayerId = Math.floor(Math.random() * 1000000)
     var labeledHands = []
-    labeledHands.push({playerId: firstPlayerId, hand: newHands[0]})
+    labeledHands.push({icon: 0, playerId: firstPlayerId, hand: newHands[0]})
     labeledHands.push({playerId: null, hand: newHands[1]})
     labeledHands.push({playerId: null, hand: newHands[2]})
     labeledHands.push({playerId: null, hand: newHands[3]})
 
     bridgeClient.makeNewGame(firstPlayerId, labeledHands)
 
+    setPrompt()
     setGame({
       localPlayerId: firstPlayerId,
       hands: labeledHands,
@@ -134,6 +135,7 @@ function Bridge(props) {
   }
 
   const joinGame = () => {
+    setGame({})
     setPrompt((
       <div id="enter-game-code-container">
         <p>Enter Game Code</p>
@@ -183,8 +185,7 @@ function Bridge(props) {
                     phase={game.phase}
                     hand={<Hand cards={hand.hand}/>}
                     isLocalPlayer={index === 0}
-                    playerIcon = {playerIcons[index]}
-
+                    playerIcon = {playerIcons[hand.icon]}
                     active={activePlayer === index+1}
                   />
                 </div>

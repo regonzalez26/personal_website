@@ -18,12 +18,14 @@ const getGameInfo = (gamePool) => {
     let filteredHandInfo = {}
     filteredHandInfo.playerId = hand.playerId,
     filteredHandInfo.hand = hand.hand
+    filteredHandInfo.icon = hand.icon
     hands.push(filteredHandInfo)
   })
 
   return {
     id: gamePool.id,
-    hands: hands
+    hands: hands,
+    phase: gamePool.phase
   }
 }
 
@@ -32,7 +34,7 @@ const updateGameForAllPlayers = (originPlayerId, gamePool, playerAction, playerA
     if(hand.playerId != originPlayerId && hand.connection){
       hand.connection.send(JSON.stringify({
           event: BridgeEvents.PLAYER_ACTION,
-          data: {...getGameInfo(gamePool), action: playerAction, actionData: playerActionData}
+          data: {game: getGameInfo(gamePool), action: playerAction, actionData: playerActionData}
         })
       )
     }
@@ -85,6 +87,7 @@ const handleJoinGamePool = (connection, data) => {
       if(!gamePoolToJoin.hands[i].playerId){
         gamePoolToJoin.hands[i].playerId = data.playerInfo.id
         gamePoolToJoin.hands[i].connection = connection
+        gamePoolToJoin.hands[i].icon = i
         break
       }
     }

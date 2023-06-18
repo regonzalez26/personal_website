@@ -74,7 +74,7 @@ export class BridgeClient {
   handlePlayerAction(data){
     let msg = {
       command: BridgeCommands.UPDATE_GAME,
-      game: data,
+      game: data.game,
       action: data.action,
       actionData: data.actionData
     }
