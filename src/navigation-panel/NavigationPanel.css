@@ -1,9 +1,9 @@
 #navigation-panel-container {
   display: inline-block;
-  width: 36px;
+  width: 30px;
   height: 100vh;
 
-  background-color: #141764;
+  background-color: #001340;
   transition: 0.2s ease-in;
 }
 

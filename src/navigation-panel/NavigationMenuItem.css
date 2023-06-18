@@ -6,7 +6,7 @@
   position: relative;
   z-index: 10000;
 
-  background-color: #141764;
+  background-color: #001340;
   background-size: 36px 36px;
   background-repeat: no-repeat;
   background-position: center;
@@ -17,6 +17,7 @@
 .navigation-menu-item button:hover {
   cursor: pointer;
   background-color: #fff;
+  transition: 0.3s ease;
 }
 
 .navigation-menu-item .selected {

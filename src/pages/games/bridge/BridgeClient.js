@@ -1,14 +1,13 @@
-import { BridgePhases } from "./Bridge"
+import { BridgePhases } from "./BridgePhases"
 import { BridgeEvents } from "./server/BridgeEvents"
-
-export const BridgeCommands  = Object.freeze({
-  CREATE_NEW_PLAYER: "create_new_player",
-  SET_GAME_ID: "set_game_id",
-  UPDATE_GAME: "update_game"
-})
+import { BridgeCommands } from "../BridgeCommands"
 
 export class BridgeClient {
   constructor(url, callBack){
+    this.inititalize(url, callBack)
+  }
+
+  inititalize(url, callBack){
     this.server = new WebSocket(url)
     this.connected = false
     this.clientCallBack = callBack

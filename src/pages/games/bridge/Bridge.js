@@ -1,41 +1,16 @@
 import React, { useCallback, useRef, useState, useEffect } from "react"
 
 import Deck from "./components/Deck"
-import Hand from "./components/Hand"
-import Player from "./Player"
 
 import "./Bridge.css"
-import { BridgeClient, BridgeCommands } from "./BridgeClient"
-import { BridgePlayerActions } from "./server/BridgePlayerActions"
+import { BridgeClient } from "./BridgeClient"
+import { BridgeCommands } from "../BridgeCommands"
+import { BridgeNotifications, getPlayerActionNotif } from "./utilities/BridgeNotifications"
 
-import playerIcon1 from "../bridge/assets/remote-player-icon-0.jpg"
-import playerIcon2 from "../bridge/assets/remote-player-icon-1.jpg"
-import playerIcon3 from "../bridge/assets/remote-player-icon-2.jpg"
-import playerIcon4 from "../bridge/assets/remote-player-icon-3.jpg"
-
-export const BridgePhases = {
-  Idle: "idle",
-  WaitingForOtherPlayers:"waiting_for_other_players", 
-  Betting: "betting",
-  PartnerPicking: "partner_picking",
-  Rounds: "rounds",
-  End: "end"
-}
-
-const getPlayerActionNotif = (action, actionData) => {
-  let notif = ""
-
-  switch(action){
-    case BridgePlayerActions.JOIN_GAME:
-      notif = <div>PLAYER {actionData.playerInfo.id} has joined the game.<br></br>Waiting for others...</div>
-      break
-    default:
-      notif = ""
-      break
-  }
-
-  return notif
-}
+import { BridgePrompt, BridgePrompts } from "./utilities/BridgePrompt"
+import { BridgeToolbar } from "./utilities/BridgeToolbar"
+import { BridgePlayingTable } from "./utilities/BridgePlayingTable"
+import { BridgePhases } from "./BridgePhases"
 
 function Bridge(props) {
   const [activePlayer] = useState(-1)
@@ -45,12 +20,9 @@ function Bridge(props) {
   const [deck] = useState(new Deck())
   const [game, setGame]= useState({})
   const stateRef = useRef()
-  const playerIcons = [
-    playerIcon1,
-    playerIcon2,
-    playerIcon3,
-    playerIcon4
-  ]
+  stateRef.game = game
+
+  //---------------------------------UTILITY FUNCTIONS-------------------------------
 
   const setDisappearingNotif = (notif, timeout = 5000) => {
     setNotif(notif)
@@ -60,8 +32,15 @@ function Bridge(props) {
     }, timeout)
   }
 
-  stateRef.game = game
+  const inputGameCodeKeyDown = (event) =>  {
+    if(event.keyCode === 13){
+      let gameCode = event.currentTarget.value
+      setPrompt()
+      bridgeClient.joinGame(gameCode)
+    }
+  }
 
+  //----------------------------------CLIENT AND CALLBACKS---------------------------
   const clientCallBack = useCallback((msg) => {
     switch(msg.command){
       case BridgeCommands.CREATE_NEW_PLAYER:
@@ -87,33 +66,20 @@ function Bridge(props) {
   },[])
 
   const [bridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))
-  
-  useEffect(()=>{
-    return () => {
-      bridgeClient.close()
-    }
-  },[bridgeClient])
 
-
-  // const endGame = () => {
-  //   if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again.") }
-  //   else { setNotif("Click New Game to Start")}
-
-  //   setGame({})
-  //   setbridgeClient({})
-  // }
+  //---------------------------------PLAYER ACTIONS---------------------------------
 
   const newGame = () => {
-    if(!bridgeClient.connected){ setNotif("Unable to Connect to Server. Try again."); return}
+    if(!bridgeClient.connected){ setPrompt({prompt: BridgePrompts.SERVER_DOWN}); return}
 
     deck.shuffle()
     var newHands = deck.distribute()
     var firstPlayerId = Math.floor(Math.random() * 1000000)
     var labeledHands = []
-    labeledHands.push({icon: 0, playerId: firstPlayerId, hand: newHands[0]})
-    labeledHands.push({playerId: null, hand: newHands[1]})
-    labeledHands.push({playerId: null, hand: newHands[2]})
-    labeledHands.push({playerId: null, hand: newHands[3]})
+    newHands.forEach((hand, index)=>{
+      let labeledHand = (index === 0) ? {icon: 0, playerId: firstPlayerId, hand: newHands[index]} : {hand: newHands[index]}
+      labeledHands.push(labeledHand) 
+    })
 
     bridgeClient.makeNewGame(firstPlayerId, labeledHands)
 
@@ -125,73 +91,38 @@ function Bridge(props) {
     })
   }
 
-  const inputGameCodeKeyDown = (event) =>  {
-    if(event.keyCode === 13){
-      var gameCode = event.currentTarget.value
-      setPrompt()
-      bridgeClient.joinGame(gameCode)
-    }
-  }
-
   const joinGame = () => {
     setGame({})
-    setPrompt((
-      <div id="enter-game-code-container">
-        <p>Enter Game Code</p>
-        <input onKeyDown={inputGameCodeKeyDown} type="text" id="input-game-code"></input>
-      </div>
-    ))
+
+    if(bridgeClient?.connected){
+      setPrompt({
+        prompt: BridgePrompts.ENTER_GAME_CODE,
+        onKeyDown: inputGameCodeKeyDown
+      })
+    } else {
+      setPrompt({
+        prompt: BridgePrompts.SERVER_DOWN
+      })
+    }
   }
 
-  const toolbars = [
+  const [toolbars, setToolbars] = useState([
     {label: "New Game", fxn: newGame},
     {label: "Join Game", fxn: joinGame}
-  ]
+  ])
 
-  console.log(game)
-
-  const arrangement = []
-  game?.hands?.forEach((hand)=>{
-    if(hand.playerId === game.localPlayerId){
-      arrangement.unshift(hand)
-    } else {
-      arrangement.push(hand)
+  useEffect(()=>{
+    return () => {
+      bridgeClient.close()
     }
-  })
+  },[bridgeClient])
 
   return (
     <div id="bridge-game-container">
-      <div id="bridge-game-header">
-        {
-          toolbars.map((toolbar, index) => {
-            let toolbarButton = <button key={Math.random()} onClick={()=>{toolbar.fxn()}}>{toolbar.label}</button>
-            let titleBar = index >= toolbars.length/2 ? <div key={Math.random()} id="bridge-game-title">Bridge</div> : null
-            return [titleBar, toolbarButton]
-          })
-        }
-      </div>
-      <div id="bridge-game-notif-bar">{notif}</div>
-      {prompt}
-      <div id="bridge-playing-table">
-        {
-          arrangement.map((hand, index) => {
-              return (
-                <div key={Math.random()} className={`hands-container-${index}`}>
-                  <Player
-                    key={Math.random()}
-                    bridgeClient={bridgeClient}
-                    playerId={hand.playerId}
-                    phase={game.phase}
-                    hand={<Hand cards={hand.hand}/>}
-                    isLocalPlayer={index === 0}
-                    playerIcon = {playerIcons[hand.icon]}
-                    active={activePlayer === index+1}
-                  />
-                </div>
-              )
-          })
-        }
-      </div>
+      <BridgeToolbar toolbars={toolbars}/>
+      <BridgeNotifications notif={notif}/>
+      <BridgePrompt prompt={prompt?.prompt} onKeyDown={prompt?.onKeyDown}/>
+      <BridgePlayingTable bridgeClient={bridgeClient} game={game} />
     </div>
   )
 }

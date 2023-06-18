@@ -38,9 +38,10 @@
 #bridge-game-header button:hover {
   background-color: #623a28;
   color: white;
+  transition: 0.3s ease;
 }
 
-#enter-game-code-container {
+#prompt-container {
   text-align: center;
   margin-top: 15%;
   height: 120px;
@@ -50,12 +51,13 @@
   color: white;
 }
 
-#input-game-code {
+#prompt-input {
   height: 60px;
   width: 240px;
   border-radius: 30px;
   border: none;
   margin-left: 12px;
+  margin-top: 24px;
   font-size: 25px;
   font-family: "CS Gordon";
   text-align: center;
