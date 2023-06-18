@@ -1,6 +1,6 @@
 import { BridgePhases } from "./BridgePhases"
 import { BridgeEvents } from "./server/BridgeEvents"
-import { BridgeCommands } from "../BridgeCommands"
+import { BridgeCommands } from "./BridgeCommands"
 
 export class BridgeClient {
   constructor(url, callBack){

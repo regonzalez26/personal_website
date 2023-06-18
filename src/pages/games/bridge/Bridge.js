@@ -4,7 +4,7 @@ import Deck from "./components/Deck"
 
 import "./Bridge.css"
 import { BridgeClient } from "./BridgeClient"
-import { BridgeCommands } from "../BridgeCommands"
+import { BridgeCommands } from "./BridgeCommands"
 import { BridgeNotifications, getPlayerActionNotif } from "./utilities/BridgeNotifications"
 
 import { BridgePrompt, BridgePrompts } from "./utilities/BridgePrompt"
