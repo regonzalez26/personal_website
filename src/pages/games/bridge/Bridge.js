@@ -13,7 +13,6 @@ import { BridgePlayingTable } from "./utilities/BridgePlayingTable"
 import { BridgePhases } from "./BridgePhases"
 
 function Bridge(props) {
-  const [activePlayer] = useState(-1)
   const [notif, setNotif] = useState()
   const [prompt, setPrompt] = useState()
   const WS_URL = 'ws://localhost:8000'
@@ -40,6 +39,11 @@ function Bridge(props) {
     }
   }
 
+  const startGame = () => {
+    setPrompt()
+    setDisappearingNotif("The game has started")
+  }
+
   //----------------------------------CLIENT AND CALLBACKS---------------------------
   const clientCallBack = useCallback((msg) => {
     switch(msg.command){
@@ -60,7 +64,7 @@ function Bridge(props) {
         setGame({...stateRef.game, hands: msg.game.hands})
         break;
       case BridgeCommands.PROMPT:
-        setPrompt({prompt: msg.prompt})
+        setPrompt({prompt: msg.prompt, onClick: startGame})
         break
       default:
         setNotif(JSON.stringify(msg))
@@ -109,7 +113,7 @@ function Bridge(props) {
     }
   }
 
-  const [toolbars, setToolbars] = useState([
+  const [toolbars] = useState([
     {label: "New Game", fxn: newGame},
     {label: "Join Game", fxn: joinGame}
   ])
@@ -124,7 +128,7 @@ function Bridge(props) {
     <div id="bridge-game-container">
       <BridgeToolbar toolbars={toolbars}/>
       <BridgeNotifications notif={notif}/>
-      <BridgePrompt prompt={prompt?.prompt} onKeyDown={prompt?.onKeyDown}/>
+      <BridgePrompt prompt={prompt?.prompt} onClick={prompt?.onClick} onKeyDown={prompt?.onKeyDown}/>
       <BridgePlayingTable bridgeClient={bridgeClient} game={game} />
     </div>
   )

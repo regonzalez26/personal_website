@@ -4,6 +4,7 @@ const BridgeEvents = Object.freeze({
   NEW_GAME_POOL_CREATED: "new_game_pool_created",
   JOIN_GAME_POOL: "join_game_pool",
   JOIN_GAME_POOL_SUCCESS: "join_game_pool_success",
+  GAME_POOL_COMPLETE: "game_pool_complete",
   GAME_NOT_FOUND: "game_not_found",
   PLAYER_ACTION: "player_action"
 })

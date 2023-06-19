@@ -33,6 +33,9 @@ export class BridgeClient {
       case BridgeEvents.JOIN_GAME_POOL_SUCCESS:
         this.handleJoinGamePoolSuccess(event.data)
         break
+      case BridgeEvents.GAME_POOL_COMPLETE:
+        this.handleGamePoolComplete()
+        break
       case BridgeEvents.GAME_NOT_FOUND:
         this.handleGameNotFound()
         break
@@ -47,17 +50,6 @@ export class BridgeClient {
 
 //-------------SERVER MESSAGE HANDLERS------------------
 
-  handleJoinGamePoolSuccess(data){
-    var msg = {
-      command: BridgeCommands.CREATE_NEW_PLAYER,
-      playerId: this.localPlayerId,
-      hands: data.hands,
-      gameId: data.id,
-      phase: data.phase
-    }
-    this.clientCallBack(msg)
-  }
-
   handleGameNotFound(){
     let msg = {
       command: BridgeCommands.PROMPT,
@@ -70,6 +62,25 @@ export class BridgeClient {
     var msg = {
       command: BridgeCommands.SET_GAME_ID,
       gameId: data.gameId
+    }
+    this.clientCallBack(msg)
+  }
+
+  handleJoinGamePoolSuccess(data){
+    var msg = {
+      command: BridgeCommands.CREATE_NEW_PLAYER,
+      playerId: this.localPlayerId,
+      hands: data.hands,
+      gameId: data.id,
+      phase: data.phase
+    }
+    this.clientCallBack(msg)
+  }
+
+  handleGamePoolComplete(){
+    var msg = {
+      command: BridgeCommands.PROMPT,
+      prompt: BridgePrompts.START_GAME
     }
     this.clientCallBack(msg)
   }

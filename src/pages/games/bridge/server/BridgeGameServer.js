@@ -29,7 +29,7 @@ const getGameInfo = (gamePool) => {
   }
 }
 
-const updateGameForAllPlayers = (originPlayerId, gamePool, playerAction, playerActionData = {}) => {
+const updateOtherPlayers = (originPlayerId, gamePool, playerAction, playerActionData = {}) => {
   gamePool.hands.forEach((hand) => {
     if(hand.playerId != originPlayerId && hand.connection){
       hand.connection.send(JSON.stringify({
@@ -37,6 +37,18 @@ const updateGameForAllPlayers = (originPlayerId, gamePool, playerAction, playerA
           data: {game: getGameInfo(gamePool), action: playerAction, actionData: playerActionData}
         })
       )
+    }
+  })
+}
+
+const sendToallPlayers = (gamePool, bridgeEvent, data) => {
+  gamePool.hands.forEach((hand)=>
+  {
+    if(hand.connection){
+      hand.connection.send(JSON.stringify({
+        event: bridgeEvent,
+        data: data
+      }))
     }
   })
 }
@@ -102,8 +114,11 @@ const handleJoinGamePool = (connection, data) => {
       })
     )
 
-    updateGameForAllPlayers(data.playerInfo.id, gamePoolToJoin, BridgePlayerActions.JOIN_GAME, {playerInfo: data.playerInfo})
+    updateOtherPlayers(data.playerInfo.id, gamePoolToJoin, BridgePlayerActions.JOIN_GAME, {playerInfo: data.playerInfo})
     displayGamePools()
+    if(gamePoolToJoin.hands.filter((h)=>!h.playerId).length === 0){
+      sendToallPlayers(gamePoolToJoin, BridgeEvents.GAME_POOL_COMPLETE)
+    }
   } else {
     connection.send(JSON.stringify({
       event: BridgeEvents.GAME_NOT_FOUND
@@ -138,7 +153,7 @@ const displayGamePools = () => {
     console.log(`\tPlayers`)
     gamePool.hands.forEach((hand, index) => {
       if(hand.playerId){
-        console.log(`\t${index+1}. ${hand.playerId}`)
+        console.log(`\t${index+1}. ${hand.playerId}: Connection: ${hand.connection.readyState}`)
       }
     })
   })
