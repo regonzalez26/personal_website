@@ -99,18 +99,18 @@ function Bridge(props) {
   }
 
   const joinGame = () => {
-    setGame({})
-
-    if(bridgeClient?.connected){
+    if(!bridgeClient?.connected){
       setPrompt({
-        prompt: BridgePrompts.ENTER_GAME_CODE,
-        onKeyDown: inputGameCodeKeyDown
+        promps: BridgePrompts.SERVER_DOWN
       })
-    } else {
-      setPrompt({
-        prompt: BridgePrompts.SERVER_DOWN
-      })
+      return
     }
+
+    setGame({})
+    setPrompt({
+      prompt: BridgePrompts.ENTER_GAME_CODE,
+      onKeyDown: inputGameCodeKeyDown
+    })
   }
 
   const [toolbars] = useState([
