@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, useEffect } from "react"
+import React, { useRef, useState, useEffect } from "react"
 
 import Deck from "./components/Deck"
 
@@ -42,10 +42,22 @@ function Bridge(props) {
   const startGame = () => {
     setPrompt()
     setDisappearingNotif("The game has started")
+    bridgeClient.voteStartGame(stateRef.game.id, stateRef.game.localPlayerId)
+  }
+
+  const getPromptCallbackFunctions = (prompt) => {
+    switch(prompt){
+      case BridgePrompts.START_GAME:
+        return {
+          onClick: startGame
+        }
+      default:
+        return {}
+    }
   }
 
   //----------------------------------CLIENT AND CALLBACKS---------------------------
-  const clientCallBack = useCallback((msg) => {
+  const clientCallBack = (msg) => {
     switch(msg.command){
       case BridgeCommands.CREATE_NEW_PLAYER:
         setGame({
@@ -61,23 +73,27 @@ function Bridge(props) {
         break;
       case BridgeCommands.UPDATE_GAME:
         setDisappearingNotif(getPlayerActionNotif(msg.action, msg.actionData))
-        setGame({...stateRef.game, hands: msg.game.hands})
+        setGame({...stateRef.game, hands: msg.game.hands, phase: msg.game.phase})
         break;
       case BridgeCommands.PROMPT:
-        setPrompt({prompt: msg.prompt, onClick: startGame})
+        let promptCallBacks = getPromptCallbackFunctions(msg.prompt)
+        setPrompt({prompt: msg.prompt, onClick: promptCallBacks.onClick})
         break
       default:
         setNotif(JSON.stringify(msg))
         break;
     }
-  },[])
+  }
 
   const [bridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))
 
   //---------------------------------PLAYER ACTIONS---------------------------------
 
   const newGame = () => {
-    if(!bridgeClient.connected){ setPrompt({prompt: BridgePrompts.SERVER_DOWN}); return}
+    if(!bridgeClient.connected){
+      setPrompt({prompt: BridgePrompts.SERVER_DOWN})
+      return
+    }
 
     deck.shuffle()
     var newHands = deck.distribute()
@@ -123,6 +139,8 @@ function Bridge(props) {
       bridgeClient.close()
     }
   },[bridgeClient])
+
+  console.log(game)
 
   return (
     <div id="bridge-game-container">

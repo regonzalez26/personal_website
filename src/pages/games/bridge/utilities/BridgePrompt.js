@@ -59,8 +59,6 @@ export function BridgePrompt(props){
       promptText = props.prompt.text
     break
   }
-
-  console.log(promptInput)
   
   return (
     <div id="prompt-container">

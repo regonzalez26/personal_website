@@ -5,10 +5,12 @@ import { BridgePrompts } from "./utilities/BridgePrompt"
 
 export class BridgeClient {
   constructor(url, callBack){
+    this.url = url
+    this.callBack = callBack
     this.inititalize(url, callBack)
   }
 
-  inititalize(url, callBack){
+  inititalize(url = this.url, callBack = this.callBack){
     this.server = new WebSocket(url)
     this.connected = false
     this.clientCallBack = callBack
@@ -122,6 +124,16 @@ export class BridgeClient {
           id: this.localPlayerId
         },
         gameId: gameId
+      }
+    })
+  }
+
+  voteStartGame(gameId, localPlayerId){
+    this.send({
+      event: BridgeEvents.VOTE_START_GAME,
+      data: {
+        gameId: gameId,
+        originPlayerId: localPlayerId
       }
     })
   }
