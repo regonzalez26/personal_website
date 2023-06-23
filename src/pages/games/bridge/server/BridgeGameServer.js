@@ -3,6 +3,7 @@ const http = require('http');
 
 const { BridgeEvents } = require("./BridgeEvents");
 const { BridgePlayerActions } = require('./BridgePlayerActions');
+const { BridgePhases } = require('../BridgePhases');
 
 //--------------------INIITIALIZE SERVER---------------------------
 const BRIDGE_SERVER_PORT = Object.freeze(8000)
@@ -25,8 +26,19 @@ const getGameInfo = (gamePool) => {
   return {
     id: gamePool.id,
     hands: hands,
-    phase: gamePool.phase
+    phase: gamePool.phase,
+    startVotes: gamePool.startVotes
   }
+}
+
+const findGameById = (gameId) => {
+  let gamePool
+  gamePools.forEach((game) => {
+    if(game.id === gameId){
+      gamePool = game
+    }
+  })
+  return gamePool
 }
 
 const updateOtherPlayers = (originPlayerId, gamePool, playerAction, playerActionData = {}) => {
@@ -126,6 +138,15 @@ const handleJoinGamePool = (connection, data) => {
   }
 }
 
+const handleVoteStartGame = (connection, data) => {
+  let game = findGameById(data.gameId)
+  game.startVotes = game.startVotes ? game.startVotes + 1 : 1
+  if(game.startVotes === 4){ game.phase = BridgePhases.Betting }
+  console.log(`START VOTES: ${game.startVotes}`)
+  console.log(`GAME PHASE: ${game.phase}`)
+  updateOtherPlayers(data.originPlayerIdlayerId, game, BridgePlayerActions.VOTE_START_GAME, {playerInfo: {id: data.originPlayerId}})
+}
+
 const handleBet = (connection, data) => {
   connection.send(JSON.stringify({
       gameId: data.gameId,
@@ -172,8 +193,12 @@ ws.on('connection', function(connection) {
         break;
       case BridgeEvents.BET:
         handleBet(connection, msg.data)
+        break
+      case BridgeEvents.VOTE_START_GAME:
+        handleVoteStartGame(connection, msg.data)
+        break
       default:
-        handleDefault(msg["data"])
+        handleDefault(msg.data)
     }
   })
   
