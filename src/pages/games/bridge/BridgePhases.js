@@ -1,11 +1,11 @@
 const BridgePhases = {
-  Idle: "idle",
-  WaitingForOtherPlayers:"waiting_for_other_players", 
-  VOTING_TO_START_GAME: "voting_to_start_game",
-  Betting: "betting",
-  PartnerPicking: "partner_picking",
-  Rounds: "rounds",
-  End: "end"
+  Idle: 0,
+  WaitingForOtherPlayers: 1, 
+  VOTING_TO_START_GAME: 2,
+  Betting: 3,
+  PartnerPicking: 4,
+  Rounds: 5,
+  End: 6
 }
 
 module.exports = { BridgePhases }

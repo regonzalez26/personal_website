@@ -7,7 +7,7 @@ const { BridgePhases } = require('../BridgePhases');
 
 //--------------------INIITIALIZE SERVER---------------------------
 const BRIDGE_SERVER_PORT = Object.freeze(8000)
-const gamePools = [];
+gamePools = [];
 const server = http.createServer()
 const ws = new WebSocketServer({server})
 server.listen(BRIDGE_SERVER_PORT, ()=>{ console.log(`Server is running on port ${BRIDGE_SERVER_PORT}`)})
@@ -39,6 +39,10 @@ const findGameById = (gameId) => {
     }
   })
   return gamePool
+}
+
+const deleteGame = (gameId) => {
+  gamePools = gamePools.filter((game) => game.id != gameId)
 }
 
 const updateOtherPlayers = (originPlayerId, gamePool, playerAction, playerActionData = {}) => {
@@ -147,6 +151,35 @@ const handleVoteStartGame = (connection, data) => {
   updateOtherPlayers(data.originPlayerIdlayerId, game, BridgePlayerActions.VOTE_START_GAME, {playerInfo: {id: data.originPlayerId}})
 }
 
+const handlePlayerLeaveGame = (connection, data) => {
+  let game = findGameById(data.gameId)
+  let endForAll = false
+
+  game.hands.forEach((hand) => {
+    if(hand.playerId === data.playerId){
+      endForAll = game.phase > BridgePhases.VOTING_TO_START_GAME
+      hand.connection = null
+      hand.playerId = null
+    }
+  })
+
+  if(endForAll){
+    deleteGame(game.id)
+    updateOtherPlayers(data.playerId, game, BridgePlayerActions.LEAVE_GAME, {playerInfo: {id: data.playerId}, endGame: true})
+  } else {
+    if(game.hands.filter((h)=>h.playerId).length === 0){
+      deleteGame(game.id)
+      return
+    }
+
+    game.startVotes = 0
+    game.phase = BridgePhases.WaitingForOtherPlayers
+    updateOtherPlayers(data.playerId, game, BridgePlayerActions.LEAVE_GAME, {playerInfo: {id: data.playerId}})
+  }
+
+  displayGamePools()
+}
+
 const handleBet = (connection, data) => {
   connection.send(JSON.stringify({
       gameId: data.gameId,
@@ -164,6 +197,8 @@ const handleDefault = (data) => {
 //-----------------------------HELPER FUNCTIONS---------------------------------
 
 const displayGamePools = () => {
+  console.log("------------------------")
+
   if(gamePools.length == 0){
     console.log("No game pools.")
     return
@@ -196,6 +231,9 @@ ws.on('connection', function(connection) {
         break
       case BridgeEvents.VOTE_START_GAME:
         handleVoteStartGame(connection, msg.data)
+        break
+      case BridgeEvents.PLAYER_LEAVE_GAME:
+        handlePlayerLeaveGame(connection, msg.data)
         break
       default:
         handleDefault(msg.data)

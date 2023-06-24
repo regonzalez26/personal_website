@@ -11,6 +11,7 @@ import { BridgePrompt, BridgePrompts } from "./utilities/BridgePrompt"
 import { BridgeToolbar } from "./utilities/BridgeToolbar"
 import { BridgePlayingTable } from "./utilities/BridgePlayingTable"
 import { BridgePhases } from "./BridgePhases"
+import { BridgePlayerActions } from "./server/BridgePlayerActions"
 
 function Bridge(props) {
   const [notif, setNotif] = useState()
@@ -45,6 +46,16 @@ function Bridge(props) {
     bridgeClient.voteStartGame(stateRef.game.id, stateRef.game.localPlayerId)
   }
 
+  const resetToLanding = () => {
+    setPrompt()
+    setGame({})
+    setNotif()
+    setToolBars([
+      {label: "New Game", fxn: newGame},
+      {label: "Join Game", fxn: joinGame}
+    ])
+  }
+
   const getPromptCallbackFunctions = (prompt) => {
     switch(prompt){
       case BridgePrompts.START_GAME:
@@ -53,6 +64,19 @@ function Bridge(props) {
         }
       default:
         return {}
+    }
+  }
+
+  const executeUpdateEffects = (playerAction, actionData) => {
+    switch(playerAction){
+      case BridgePlayerActions.LEAVE_GAME:
+        setPrompt()
+        if(actionData.endGame){
+          resetToLanding()
+        }
+        break
+      default:
+        break
     }
   }
 
@@ -67,13 +91,20 @@ function Bridge(props) {
           phase: msg.phase
         })
         setDisappearingNotif(<div>You have joined game <br></br>{msg.gameId}</div>)
+        setToolBars([
+          {label: "Leave Game", fxn: endGame}
+        ])
         break;
       case BridgeCommands.SET_GAME_ID:
         setGame({...stateRef.game, id: msg.gameId})
+        setToolBars([
+          {label: "End Game", fxn: endGame}
+        ])
         break;
       case BridgeCommands.UPDATE_GAME:
         setDisappearingNotif(getPlayerActionNotif(msg.action, msg.actionData))
         setGame({...stateRef.game, hands: msg.game.hands, phase: msg.game.phase})
+        executeUpdateEffects(msg.action, msg.actionData)
         break;
       case BridgeCommands.PROMPT:
         let promptCallBacks = getPromptCallbackFunctions(msg.prompt)
@@ -88,6 +119,10 @@ function Bridge(props) {
   const [bridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))
 
   //---------------------------------PLAYER ACTIONS---------------------------------
+  const endGame = () => {
+    bridgeClient.leaveGame(stateRef.game.id, stateRef.game.localPlayerId)
+    resetToLanding()
+  }
 
   const newGame = () => {
     if(!bridgeClient.connected){
@@ -105,7 +140,6 @@ function Bridge(props) {
     })
 
     bridgeClient.makeNewGame(firstPlayerId, labeledHands)
-
     setPrompt()
     setGame({
       localPlayerId: firstPlayerId,
@@ -129,7 +163,7 @@ function Bridge(props) {
     })
   }
 
-  const [toolbars] = useState([
+  const [toolbars, setToolBars] = useState([
     {label: "New Game", fxn: newGame},
     {label: "Join Game", fxn: joinGame}
   ])

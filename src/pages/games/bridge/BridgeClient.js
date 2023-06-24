@@ -95,6 +95,8 @@ export class BridgeClient {
       actionData: data.actionData
     }
 
+    console.log(msg)
+
     this.clientCallBack(msg)
   }
 
@@ -134,6 +136,16 @@ export class BridgeClient {
       data: {
         gameId: gameId,
         originPlayerId: localPlayerId
+      }
+    })
+  }
+
+  leaveGame(gameId, localPlayerId){
+    this.send({
+      event: BridgeEvents.PLAYER_LEAVE_GAME,
+      data: {
+        gameId: gameId,
+        playerId: localPlayerId
       }
     })
   }
