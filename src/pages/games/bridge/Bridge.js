@@ -170,9 +170,10 @@ function Bridge(props) {
 
   useEffect(()=>{
     return () => {
+      bridgeClient.leaveGame(stateRef.game.id, stateRef.game.localPlayerId)
       bridgeClient.close()
     }
-  },[bridgeClient])
+  }, [])
 
   console.log(game)
 

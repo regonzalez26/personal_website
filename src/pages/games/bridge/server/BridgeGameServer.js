@@ -153,6 +153,8 @@ const handleVoteStartGame = (connection, data) => {
 
 const handlePlayerLeaveGame = (connection, data) => {
   let game = findGameById(data.gameId)
+  if(!game){ return }
+
   let endForAll = false
 
   game.hands.forEach((hand) => {
