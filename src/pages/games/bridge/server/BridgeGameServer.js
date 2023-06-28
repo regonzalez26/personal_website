@@ -45,6 +45,16 @@ const deleteGame = (gameId) => {
   gamePools = gamePools.filter((game) => game.id != gameId)
 }
 
+const removeDisconnectedPlayers = () => {
+  gamePools.forEach((game)=> {
+    game.hands.forEach((hand)=>{
+      if(hand.connection && hand.connection.readyState === 3){
+        handlePlayerLeaveGame(hand.connection, {gameId: game.id, playerId: hand.playerId})
+      }
+    })
+  })
+}
+
 const updateOtherPlayers = (originPlayerId, gamePool, playerAction, playerActionData = {}) => {
   gamePool.hands.forEach((hand) => {
     if(hand.playerId != originPlayerId && hand.connection){
@@ -96,6 +106,10 @@ const handleNewGamePool = (connection, data) => {
     })
   )
 
+  connection.onclose = () => {
+    removeDisconnectedPlayers()
+  }
+
   displayGamePools()
 }
 
@@ -129,6 +143,10 @@ const handleJoinGamePool = (connection, data) => {
         }
       })
     )
+
+    connection.onclose = () => {
+      removeDisconnectedPlayers()
+    }
 
     updateOtherPlayers(data.playerInfo.id, gamePoolToJoin, BridgePlayerActions.JOIN_GAME, {playerInfo: data.playerInfo})
     displayGamePools()
