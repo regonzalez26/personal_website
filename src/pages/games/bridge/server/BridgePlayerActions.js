@@ -1,7 +1,16 @@
 const BridgePlayerActions = Object.freeze({
-  JOIN_GAME: "join_game",
-  VOTE_START_GAME: "vote_start_game",
-  LEAVE_GAME: "leave_game"
+  CREATE_NEW_GAME: "create_new_game"
 })
 
-module.exports = { BridgePlayerActions }
+const BridgePlayerActionData = Object.freeze({
+  CREATE_NEW_GAME: (playerId) => {
+    return {
+      action: BridgePlayerActions.CREATE_NEW_GAME,
+      actionData: {
+        playerId: playerId
+      }
+    }
+  },
+})
+
+module.exports = { BridgePlayerActions, BridgePlayerActionData }

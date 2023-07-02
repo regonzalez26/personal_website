@@ -1,7 +1,5 @@
 import React, { useRef, useState, useEffect } from "react"
 
-import Deck from "./components/Deck"
-
 import "./Bridge.css"
 import { BridgeClient } from "./BridgeClient"
 import { BridgeCommands } from "./BridgeCommands"
@@ -17,7 +15,6 @@ function Bridge(props) {
   const [notif, setNotif] = useState()
   const [prompt, setPrompt] = useState()
   const WS_URL = 'ws://localhost:8000'
-  const [deck] = useState(new Deck())
   const [game, setGame]= useState({})
   const stateRef = useRef()
   stateRef.game = game
@@ -125,27 +122,8 @@ function Bridge(props) {
   }
 
   const newGame = () => {
-    if(!bridgeClient.connected){
-      setPrompt({prompt: BridgePrompts.SERVER_DOWN})
-      return
-    }
-
-    deck.shuffle()
-    var newHands = deck.distribute()
-    var firstPlayerId = Math.floor(Math.random() * 1000000)
-    var labeledHands = []
-    newHands.forEach((hand, index)=>{
-      let labeledHand = (index === 0) ? {icon: 0, playerId: firstPlayerId, hand: newHands[index]} : {hand: newHands[index]}
-      labeledHands.push(labeledHand) 
-    })
-
-    bridgeClient.makeNewGame(firstPlayerId, labeledHands)
-    setPrompt()
-    setGame({
-      localPlayerId: firstPlayerId,
-      hands: labeledHands,
-      phase: BridgePhases.WaitingForOtherPlayers
-    })
+    let localPlayerId = Math.floor(Math.random() * 1000000)
+    bridgeClient.createNewGame(localPlayerId)
   }
 
   const joinGame = () => {

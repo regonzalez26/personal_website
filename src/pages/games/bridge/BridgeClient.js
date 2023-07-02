@@ -2,6 +2,7 @@ import { BridgePhases } from "./BridgePhases"
 import { BridgeEvents } from "./server/BridgeEvents"
 import { BridgeCommands } from "./BridgeCommands"
 import { BridgePrompts } from "./utilities/BridgePrompt"
+import { BridgePlayerActionData } from "./server/BridgePlayerActions"
 
 export class BridgeClient {
   constructor(url, callBack){
@@ -102,18 +103,8 @@ export class BridgeClient {
 
 //----------------GAME ACTIONS--------------------------
 
-  makeNewGame(firstPlayerId, hands){
-    this.localPlayerId = firstPlayerId
-    var data = {
-      event: BridgeEvents.NEW_GAME_POOL,
-      data: {
-        playerInfo: {
-          id: firstPlayerId
-        },
-        hands: hands,
-        phase: BridgePhases.WaitingForOtherPlayers
-      }
-    }
+  createNewGame(localPlayerId){
+    var data = BridgePlayerActionData.CREATE_NEW_GAME(localPlayerId)
     this.send(data)
   }
 

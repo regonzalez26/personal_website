@@ -4,6 +4,7 @@ const http = require('http');
 const { BridgeEvents } = require("./BridgeEvents");
 const { BridgePlayerActions } = require('./BridgePlayerActions');
 const { BridgePhases } = require('../BridgePhases');
+const { getHands } = require('./Deck')
 
 //--------------------INIITIALIZE SERVER---------------------------
 const BRIDGE_SERVER_PORT = Object.freeze(8000)
@@ -81,19 +82,15 @@ const sendToallPlayers = (gamePool, bridgeEvent, data) => {
 
 //-----------------------------EVENT HANDLERS-----------------------------------
 
-const handleNewGamePool = (connection, data) => {
-  let hands = data.hands
-
-  for(let i=0; i<hands.length; i++){
-    if(hands[i].playerId){
-      hands[i].connection = connection
-    }
-  }
+const handleCreateNewGame = (connection, data) => {
+  let hands = getHands()
+  hands[0].playerId = data.playerId
+  hands[0].connection = connection
 
   var gamePool = {
     id: Math.floor(Math.random() * 1000000).toString(),
     hands: hands,
-    phase: data.phase
+    phase: BridgePhases.WaitingForOtherPlayers
   }
 
   gamePools.push(gamePool)
@@ -239,24 +236,11 @@ ws.on('connection', function(connection) {
   connection.on("message",(data, is_binary)=>{
     var msg = JSON.parse(data)
 
-    switch(msg.event){
-      case BridgeEvents.NEW_GAME_POOL:
-        handleNewGamePool(connection, msg.data)
-        break;
-      case BridgeEvents.JOIN_GAME_POOL:
-        handleJoinGamePool(connection, msg.data)
-        break;
-      case BridgeEvents.BET:
-        handleBet(connection, msg.data)
-        break
-      case BridgeEvents.VOTE_START_GAME:
-        handleVoteStartGame(connection, msg.data)
-        break
-      case BridgeEvents.PLAYER_LEAVE_GAME:
-        handlePlayerLeaveGame(connection, msg.data)
-        break
+    switch(msg.action){
+      case BridgePlayerActions.CREATE_NEW_GAME:
+        handleCreateNewGame(connection, msg.actionData)
       default:
-        handleDefault(msg.data)
+        console.log(JSON.stringify(msg))
     }
   })
   
