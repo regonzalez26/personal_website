@@ -1,7 +1,8 @@
- function getHands(){
+const getHands = () => {
     var suites = ["clubs.png", "diamond.png", "heart.png", "spade.png"]
     var numbers = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"]
     var cards = []
+
     suites.forEach((suite) => {
       numbers.forEach((number)=>{
         cards.push({suite: suite, number: number})
@@ -18,8 +19,8 @@
 
     let hands = [[],[],[],[]]
 
-    for(let i=0; i<cards.length; i++){
-      hands[i%hands.length].push(cards[i])
+    for(let i=0; i<shuffledDeck.length; i++){
+      hands[i%hands.length].push(shuffledDeck[i])
     }
 
     return hands
