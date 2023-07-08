@@ -1,15 +1,15 @@
 import React, { useRef, useState, useEffect } from "react"
 
 import "./Bridge.css"
-import { BridgeClient } from "./BridgeClient"
-import { BridgeCommands } from "./BridgeCommands"
+import { BridgeClient } from "./client/BridgeClient"
+import { BridgeCommands } from "./messaging/BridgeCommands"
 import { BridgeNotifications, getPlayerActionNotif } from "./utilities/BridgeNotifications"
 
 import { BridgePrompt, BridgePrompts } from "./utilities/BridgePrompt"
 import { BridgeToolbar } from "./utilities/BridgeToolbar"
 import { BridgePlayingTable } from "./utilities/BridgePlayingTable"
 import { BridgePhases } from "./BridgePhases"
-import { BridgePlayerActions } from "./server/BridgePlayerActions"
+import { BridgePlayerActions } from "./messaging/BridgePlayerActions"
 
 function Bridge(props) {
   const [notif, setNotif] = useState()
@@ -79,38 +79,6 @@ function Bridge(props) {
 
   //----------------------------------CLIENT AND CALLBACKS---------------------------
   const clientCallBack = (msg) => {
-    switch(msg.command){
-      case BridgeCommands.CREATE_NEW_PLAYER:
-        setGame({
-          id: msg.gameId,
-          hands: msg.hands,
-          localPlayerId: msg.playerId,
-          phase: msg.phase
-        })
-        setDisappearingNotif(<div>You have joined game <br></br>{msg.gameId}</div>)
-        setToolBars([
-          {label: "Leave Game", fxn: endGame}
-        ])
-        break;
-      case BridgeCommands.SET_GAME_ID:
-        setGame({...stateRef.game, id: msg.gameId})
-        setToolBars([
-          {label: "End Game", fxn: endGame}
-        ])
-        break;
-      case BridgeCommands.UPDATE_GAME:
-        setDisappearingNotif(getPlayerActionNotif(msg.action, msg.actionData))
-        setGame({...stateRef.game, hands: msg.game.hands, phase: msg.game.phase})
-        executeUpdateEffects(msg.action, msg.actionData)
-        break;
-      case BridgeCommands.PROMPT:
-        let promptCallBacks = getPromptCallbackFunctions(msg.prompt)
-        setPrompt({prompt: msg.prompt, onClick: promptCallBacks.onClick})
-        break
-      default:
-        setNotif(JSON.stringify(msg))
-        break;
-    }
   }
 
   const [bridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))

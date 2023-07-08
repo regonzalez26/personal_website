@@ -1,11 +1,11 @@
 const { WebSocketServer } = require('ws');
 const http = require('http');
 
-const { BridgeEvents } = require("./BridgeEvents");
-const { BridgePlayerActions } = require('./BridgePlayerActions');
+const { BridgePlayerActions } = require('../messaging/BridgePlayerActions')
+const { BridgeServerResponses} = require('./BridgeServerResponses')
 
-const { createNewGame } = require('./BridgeGameHandler');
-const { saveGame, getAllGames } = require('./BridgeGameStorage');
+const { createNewGame } = require('./BridgeGameHandler')
+const { saveGame, getAllGames } = require('./BridgeGameStorage')
 const { getClientGame } = require('./BridgeGameFormatter')
 
 //---------------------------INIITIALIZE SERVER---------------------------------
@@ -20,25 +20,6 @@ const memoryObject = {}
 const send = (connection, JSONdata) => {
   connection.send(JSON.stringify(JSONdata))
 }
-
-//-----------------------------EVENT HANDLERS-----------------------------------
-
-const handleCreateNewGame = (connection, data) => {
-  let game = createNewGame(connection, data.playerId)
-  saveGame(memoryObject, game)
-  let clientGame = getClientGame(game)
-
-  send(connection, {
-      event: BridgeEvents.NEW_GAME_POOL_CREATED,
-      data: {
-        game: clientGame
-      }
-  })
-
-  displayGames(getAllGames(memoryObject))
-}
-
-//-----------------------------HELPER FUNCTIONS---------------------------------
 
 const displayGames = (games) => {
   console.log("------------------------")
@@ -59,11 +40,26 @@ const displayGames = (games) => {
   })
 }
 
+//-----------------------------EVENT HANDLERS-----------------------------------
+
+const handleCreateNewGame = (connection, data) => {
+  let game = createNewGame(connection, data.playerId)
+  saveGame(memoryObject, game)
+  let clientGame = getClientGame(game)
+  let response = BridgeServerResponses.CREATE_NEW_GAME(clientGame)
+  send(connection, response)
+  displayGames(getAllGames(memoryObject))
+}
+
 const msgActionHandlers = {}
 msgActionHandlers[BridgePlayerActions.CREATE_NEW_GAME] = handleCreateNewGame
 
+//-----------------------CONNECTION EVENT LISTENERS-------------------------------
+
 
 ws.on('connection', function(connection) {
+  console.log("new connection made to server")
+  
   connection.on("message",(data)=>{
     let msg = JSON.parse(data)
     let [action, actionData] = [msg.action, msg.actionData]

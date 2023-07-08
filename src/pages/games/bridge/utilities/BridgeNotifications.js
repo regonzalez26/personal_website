@@ -1,4 +1,4 @@
-import { BridgePlayerActions } from "../server/BridgePlayerActions"
+import { BridgePlayerActions } from "../messaging/BridgePlayerActions"
 
 export const getPlayerActionNotif = (action, actionData) => {
   let notif
