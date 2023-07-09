@@ -1,3 +1,7 @@
+// CREATE 
+
+const { memo } = require("react")
+
 const saveGame = (memoryObject, game) => {
   if(!memoryObject.games){ memoryObject.games = [] }
 
@@ -5,9 +9,17 @@ const saveGame = (memoryObject, game) => {
   return true
 }
 
+// READ
+
 const getAllGames = (memoryObject) => {
   if(!memoryObject.games){ memoryObject.games = [] }
   return memoryObject.games
 }
 
-module.exports = { saveGame, getAllGames }
+const getGameById = (memoryObject, gameId) => {
+  if(!memoryObject.games){ memoryObject.games = [] }
+  let game = memoryObject.games.filter(game => game.id === gameId)
+  return game.length ? game[0] : null
+}
+
+module.exports = { saveGame, getAllGames, getGameById }

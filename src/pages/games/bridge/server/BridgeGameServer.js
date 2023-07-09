@@ -4,9 +4,10 @@ const http = require('http');
 const { BridgePlayerActions } = require('../messaging/BridgePlayerActions')
 const { BridgeServerResponses} = require('./BridgeServerResponses')
 
-const { createNewGame } = require('./BridgeGameHandler')
-const { saveGame, getAllGames } = require('./BridgeGameStorage')
-const { getClientGame } = require('./BridgeGameFormatter')
+const { createNewGame, addPlayerToGame } = require('./BridgeGameHandler')
+const { saveGame, getAllGames, getGameById } = require('./BridgeGameStorage')
+const { getClientGame } = require('./BridgeGameFormatter');
+const { memo } = require('react');
 
 //---------------------------INIITIALIZE SERVER---------------------------------
 const BRIDGE_SERVER_PORT = Object.freeze(8000)
@@ -51,8 +52,18 @@ const handleCreateNewGame = (connection, data) => {
   displayGames(getAllGames(memoryObject))
 }
 
+const handleJoinGame = (connection, data) => {
+  let game = getGameById(memoryObject, data.gameId)
+  addPlayerToGame(game, connection, data.playerId)
+  let clientGame = getClientGame(game)
+  let response = BridgeServerResponses.JOIN_GAME(clientGame)
+  send(connection, response)
+  displayGames(getAllGames(memoryObject))
+}
+
 const msgActionHandlers = {}
 msgActionHandlers[BridgePlayerActions.CREATE_NEW_GAME] = handleCreateNewGame
+msgActionHandlers[BridgePlayerActions.JOIN_GAME] = handleJoinGame
 
 //-----------------------CONNECTION EVENT LISTENERS-------------------------------
 

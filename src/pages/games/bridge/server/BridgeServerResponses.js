@@ -9,6 +9,15 @@ const BridgeServerResponses = Object.freeze({
         game: game
       }
     }
+  },
+  JOIN_GAME: (game) => {
+    return {
+      type: "response",
+      responseFor: BridgePlayerActions.JOIN_GAME,
+      responseData: {
+        game: game
+      }
+    }
   }
 })
 

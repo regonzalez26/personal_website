@@ -29,8 +29,14 @@ export class BridgeClient {
     if(message.type === 'response'){
       switch(message.responseFor){
         case BridgePlayerActions.CREATE_NEW_GAME:
-        default:
           this.handleCreateNewGame(message.responseData)
+          break
+        case BridgePlayerActions.JOIN_GAME:
+          this.handleJoinGame(message.responseData)
+          break
+        default:
+          console.log(message)
+          break
       }
     } else {
       console.log(message)
@@ -50,10 +56,26 @@ export class BridgeClient {
     this.clientCallBack(msg)
   }
 
+  handleJoinGame(responseData){
+    let msg = {
+      command: BridgeCommands.UPDATE_GAME,
+      commandData: {
+        game: responseData.game
+      }
+    }
+
+    this.clientCallBack(msg)
+  }
+
 //----------------GAME ACTIONS--------------------------
 
   createNewGame(localPlayerId){
     var data = BridgePlayerActionData.CREATE_NEW_GAME(localPlayerId)
+    this.send(data)
+  }
+
+  joinGame(gameCode, localPlayerId){
+    var data = BridgePlayerActionData.JOIN_GAME(gameCode, localPlayerId)
     this.send(data)
   }
 

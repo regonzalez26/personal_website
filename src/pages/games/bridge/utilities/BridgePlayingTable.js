@@ -19,7 +19,7 @@ export function BridgePlayingTable(props){
 
   const arrangement = []
   game?.players?.forEach((player)=>{
-    if(player.id === game.localPlayerId){
+    if(player.id === props.localPlayerId){
       arrangement.unshift(player)
     } else {
       arrangement.push(player)

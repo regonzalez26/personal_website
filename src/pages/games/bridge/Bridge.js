@@ -18,6 +18,7 @@ function Bridge(props) {
   const [game, setGame]= useState({})
   const stateRef = useRef()
   stateRef.game = game
+  const [localPlayerId] = useState(Math.floor(Math.random() * 1000000))
 
   //---------------------------------UTILITY FUNCTIONS-------------------------------
 
@@ -33,7 +34,7 @@ function Bridge(props) {
     if(event.keyCode === 13){
       let gameCode = event.currentTarget.value
       setPrompt()
-      bridgeClient.joinGame(gameCode)
+      bridgeClient.joinGame(gameCode, localPlayerId)
     }
   }
 
@@ -100,8 +101,6 @@ function Bridge(props) {
   }
 
   const newGame = () => {
-    let localPlayerId = Math.floor(Math.random() * 1000000)
-    setGame({localPlayerId: localPlayerId})
     bridgeClient.createNewGame(localPlayerId)
   }
 
@@ -139,7 +138,7 @@ function Bridge(props) {
       <BridgeToolbar toolbars={toolbars}/>
       <BridgeNotifications notif={notif}/>
       <BridgePrompt prompt={prompt?.prompt} onClick={prompt?.onClick} onKeyDown={prompt?.onKeyDown}/>
-      <BridgePlayingTable bridgeClient={bridgeClient} game={game} />
+      <BridgePlayingTable bridgeClient={bridgeClient} localPlayerId={localPlayerId} game={game} />
     </div>
   )
 }
