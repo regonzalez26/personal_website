@@ -18,28 +18,31 @@ export function BridgePlayingTable(props){
   ]
 
   const arrangement = []
-  game?.hands?.forEach((hand)=>{
-    if(hand.playerId === game.localPlayerId){
-      arrangement.unshift(hand)
+  game?.players?.forEach((player)=>{
+    if(player.id === game.localPlayerId){
+      arrangement.unshift(player)
     } else {
-      arrangement.push(hand)
+      arrangement.push(player)
     }
   })
+
+  console.log("arrangement")
+  console.log(arrangement)
 
   return (
     <div id="bridge-playing-table">
       {
-        arrangement.map((hand, index) => {
+        arrangement.map((player, index) => {
             return (
               <div key={Math.random()} className={`hands-container-${index}`}>
                 <Player
                   key={Math.random()}
                   bridgeClient={bridgeClient}
-                  playerId={hand.playerId}
+                  playerId={player.id}
                   phase={game.phase}
-                  hand={<Hand cards={hand.hand}/>}
+                  hand={<Hand cards={player.hand}/>}
                   isLocalPlayer={index === 0}
-                  playerIcon = {playerIcons[hand.icon]}
+                  playerIcon = {playerIcons[player.icon]}
                 />
               </div>
             )

@@ -1,3 +1,4 @@
+import { BridgeCommands } from "../messaging/BridgeCommands"
 import { BridgePlayerActionData, BridgePlayerActions } from "../messaging/BridgePlayerActions"
 
 export class BridgeClient {
@@ -5,9 +6,6 @@ export class BridgeClient {
     this.url = url
     this.callBack = callBack
     this.inititalize(url, callBack)
-
-    this.handlers = {}
-    this.handlers[BridgePlayerActions.CREATE_NEW_GAME] = this.handleCreateNewGame
   }
 
   inititalize(url = this.url, callBack = this.callBack){
@@ -29,7 +27,11 @@ export class BridgeClient {
 
   handleMessage(message){
     if(message.type === 'response'){
-      this.handlers[message.responseFor](message.responseData)
+      switch(message.responseFor){
+        case BridgePlayerActions.CREATE_NEW_GAME:
+        default:
+          this.handleCreateNewGame(message.responseData)
+      }
     } else {
       console.log(message)
     }
@@ -38,7 +40,14 @@ export class BridgeClient {
 //-------------SERVER MESSAGE HANDLERS------------------
 
   handleCreateNewGame(responseData){
-    console.log(responseData)
+    let msg = {
+      command: BridgeCommands.UPDATE_GAME,
+      commandData: {
+        game: responseData.game
+      }
+    }
+
+    this.clientCallBack(msg)
   }
 
 //----------------GAME ACTIONS--------------------------

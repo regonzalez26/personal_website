@@ -79,6 +79,16 @@ function Bridge(props) {
 
   //----------------------------------CLIENT AND CALLBACKS---------------------------
   const clientCallBack = (msg) => {
+    let commandData = msg.commandData
+
+    switch(msg.command){
+      case BridgeCommands.UPDATE_GAME:
+        setGame({...stateRef.game, ...commandData.game})
+        break
+      default:
+        console.log(msg)
+        break
+    }
   }
 
   const [bridgeClient] = useState(new BridgeClient(WS_URL, clientCallBack))
@@ -91,6 +101,7 @@ function Bridge(props) {
 
   const newGame = () => {
     let localPlayerId = Math.floor(Math.random() * 1000000)
+    setGame({localPlayerId: localPlayerId})
     bridgeClient.createNewGame(localPlayerId)
   }
 
