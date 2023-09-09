@@ -1,7 +1,5 @@
 // CREATE 
 
-const { memo } = require("react")
-
 const saveGame = (memoryObject, game) => {
   if(!memoryObject.games){ memoryObject.games = [] }
 

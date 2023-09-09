@@ -22,6 +22,10 @@ const addPlayerToGame = (game, connection, playerId) => {
     if(!game.players[i].id){
       game.players[i].connection = connection
       game.players[i].id = playerId
+
+      if(i==game.players.length-1){
+        game.phase = BridgePhases.Betting
+      }
       break
     }
   }

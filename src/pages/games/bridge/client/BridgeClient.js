@@ -1,5 +1,7 @@
 import { BridgeCommands } from "../messaging/BridgeCommands"
+import { BridgeMessageTypes } from "../messaging/BridgeMessages"
 import { BridgePlayerActionData, BridgePlayerActions } from "../messaging/BridgePlayerActions"
+import { BridgeServerResponseNotificationTypes } from "../server/BridgeServerResponseNotifications"
 
 export class BridgeClient {
   constructor(url, callBack){
@@ -26,7 +28,7 @@ export class BridgeClient {
   }
 
   handleMessage(message){
-    if(message.type === 'response'){
+    if(message.type === BridgeMessageTypes.RESPONSE){
       switch(message.responseFor){
         case BridgePlayerActions.CREATE_NEW_GAME:
           this.handleCreateNewGame(message.responseData)
@@ -38,8 +40,12 @@ export class BridgeClient {
           console.log(message)
           break
       }
-    } else {
-      console.log(message)
+    } else if(message.type === BridgeMessageTypes.NOTIFICATION) {
+      let data = message.notifData
+      switch(message.notifType){
+        case BridgeServerResponseNotificationTypes.UPDATE_GAME:
+          this.updateGame(data.game);
+      }
     }
   }
 
@@ -61,6 +67,17 @@ export class BridgeClient {
       command: BridgeCommands.UPDATE_GAME,
       commandData: {
         game: responseData.game
+      }
+    }
+
+    this.clientCallBack(msg)
+  }
+
+  updateGame(game){
+    let msg = {
+      command: BridgeCommands.UPDATE_GAME,
+      commandData: {
+        game: game
       }
     }
 

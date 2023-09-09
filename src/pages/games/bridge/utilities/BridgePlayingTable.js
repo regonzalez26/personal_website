@@ -26,9 +26,6 @@ export function BridgePlayingTable(props){
     }
   })
 
-  console.log("arrangement")
-  console.log(arrangement)
-
   return (
     <div id="bridge-playing-table">
       {

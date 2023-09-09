@@ -66,16 +66,6 @@ function Bridge(props) {
   }
 
   const executeUpdateEffects = (playerAction, actionData) => {
-    switch(playerAction){
-      case BridgePlayerActions.LEAVE_GAME:
-        setPrompt()
-        if(actionData.endGame){
-          resetToLanding()
-        }
-        break
-      default:
-        break
-    }
   }
 
   //----------------------------------CLIENT AND CALLBACKS---------------------------

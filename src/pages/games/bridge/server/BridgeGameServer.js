@@ -2,12 +2,10 @@ const { WebSocketServer } = require('ws');
 const http = require('http');
 
 const { BridgePlayerActions } = require('../messaging/BridgePlayerActions')
-const { BridgeServerResponses} = require('./BridgeServerResponses')
+const { getResponses, sendResponses } = require('./BridgeServerResponseHandler')
 
 const { createNewGame, addPlayerToGame } = require('./BridgeGameHandler')
 const { saveGame, getAllGames, getGameById } = require('./BridgeGameStorage')
-const { getClientGame } = require('./BridgeGameFormatter');
-const { memo } = require('react');
 
 //---------------------------INIITIALIZE SERVER---------------------------------
 const BRIDGE_SERVER_PORT = Object.freeze(8000)
@@ -17,10 +15,6 @@ server.listen(BRIDGE_SERVER_PORT, ()=>{ console.log(`Server is running on port $
 const memoryObject = {}
 
 //----------------------------HELPER FUNCTIONS----------------------------------
-
-const send = (connection, JSONdata) => {
-  connection.send(JSON.stringify(JSONdata))
-}
 
 const displayGames = (games) => {
   console.log("------------------------")
@@ -32,6 +26,7 @@ const displayGames = (games) => {
 
   games.forEach((game) => {
     console.log(`Game Id: ${game.id}`)
+    console.log(`\tPhase: ${game.phase}`)
     console.log(`\tPlayers`)
     game.players.forEach((player, index) => {
       if(player.id){
@@ -46,18 +41,16 @@ const displayGames = (games) => {
 const handleCreateNewGame = (connection, data) => {
   let game = createNewGame(connection, data.playerId)
   saveGame(memoryObject, game)
-  let clientGame = getClientGame(game)
-  let response = BridgeServerResponses.CREATE_NEW_GAME(clientGame)
-  send(connection, response)
+  let responses = getResponses.CREATE_NEW_GAME(game, data.playerId)
+  sendResponses(responses)
   displayGames(getAllGames(memoryObject))
 }
 
 const handleJoinGame = (connection, data) => {
   let game = getGameById(memoryObject, data.gameId)
   addPlayerToGame(game, connection, data.playerId)
-  let clientGame = getClientGame(game)
-  let response = BridgeServerResponses.JOIN_GAME(clientGame)
-  send(connection, response)
+  let responses = getResponses.JOIN_GAME(game, data.playerId)
+  sendResponses(responses)
   displayGames(getAllGames(memoryObject))
 }
 

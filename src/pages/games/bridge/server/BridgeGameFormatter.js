@@ -15,4 +15,22 @@ const getClientGame = (game) => {
   }
 }
 
-module.exports = { getClientGame }
+const getActorConnection = (game, actorId) => {
+  let actorConnection
+  let otherConnections = []
+  
+  game.players?.forEach((p)=>{
+    if(p.id === actorId){
+      actorConnection = p.connection
+    } else if (p.connection) {
+      otherConnections.push(p.connection)
+    }
+  })
+
+  return {
+    actorConnection: actorConnection,
+    otherConnections: otherConnections
+  }
+}
+
+module.exports = { getClientGame, getActorConnection }
